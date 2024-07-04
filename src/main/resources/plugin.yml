@@ -8,10 +8,10 @@ depend: [ WorldEdit ]
 authors: [ OJASisLive ]
 description: My first minigame plugin
 commands:
-  arenaregion:
+  blockdrop:
     description: "Make and Paste arena regions!"
-    usage: "/arenaregion"
-    aliases: [ar]
+    usage: "/blockdrop"
+    aliases: [bd]
     permission: blockdropminigame.arena
 
 permissions:
