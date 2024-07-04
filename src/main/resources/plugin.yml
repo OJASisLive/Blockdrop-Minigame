@@ -1,0 +1,19 @@
+name: Blockdropminigame
+version: '${project.version}'
+main: me.ojasislive.blockdropminigame.Blockdropminigame
+api-version: 1.16
+prefix: Blockdrop-Minigame
+loadbefore: [  ]
+depend: [ WorldEdit ]
+authors: [ OJASisLive ]
+description: My first minigame plugin
+commands:
+  arenaregion:
+    description: "Make and Paste arena regions!"
+    usage: "/arenaregion"
+    aliases: [ar]
+    permission: blockdropminigame.arena
+
+permissions:
+  blockdropminigame.arena:
+    default: op
