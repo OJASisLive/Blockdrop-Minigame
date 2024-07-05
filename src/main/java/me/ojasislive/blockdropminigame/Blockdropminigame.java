@@ -1,6 +1,6 @@
 package me.ojasislive.blockdropminigame;
 
-import me.ojasislive.blockdropminigame.arena.Arena;
+import me.ojasislive.blockdropminigame.arena.ArenaUtils;
 import me.ojasislive.blockdropminigame.commands.BlockDropCommandExecutor;
 import me.ojasislive.blockdropminigame.commands.BlockDropTabCompleter;
 import org.bukkit.Bukkit;
@@ -15,7 +15,7 @@ public final class Blockdropminigame extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
-        Arena.init(getDataFolder());
+        ArenaUtils.init(getDataFolder());
 
         // Register command executor and tab completer
         getCommand("blockdrop").setExecutor(new BlockDropCommandExecutor());
@@ -26,7 +26,7 @@ public final class Blockdropminigame extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        Arena.saveArenas();
+        ArenaUtils.saveArenas();
         Bukkit.getLogger().info(ChatColor.RED + "[Blockdrop Minigame] Plugin Stopped!!");
     }
 

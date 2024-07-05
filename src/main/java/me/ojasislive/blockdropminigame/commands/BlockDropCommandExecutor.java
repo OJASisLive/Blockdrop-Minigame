@@ -79,6 +79,15 @@ public final class BlockDropCommandExecutor implements CommandExecutor {
                     }
                     break;
                 }
+
+                case "settings": {
+                    SettingsCommandHandler settingsCommandHandler = new SettingsCommandHandler();
+                    if (settingsCommandHandler.handle(player, args) == 0) {
+                        return true;
+                    }
+                    break;
+                }
+
                 default:
                     sender.sendMessage(ChatColor.YELLOW+"["+ ChatColor.RED+ "🛑"+ ChatColor.YELLOW+ "]"
                             +ChatColor.GRAY+

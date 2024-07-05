@@ -1,6 +1,6 @@
 package me.ojasislive.blockdropminigame.commandFunctionHandlers;
 
-import me.ojasislive.blockdropminigame.arena.Arena;
+import me.ojasislive.blockdropminigame.arena.ArenaUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -14,7 +14,7 @@ public class DeleteCommandHandler {
             return 0;
         }
 
-        Boolean deleted = Arena.removeArenaByName(args[2]);
+        Boolean deleted = ArenaUtils.removeArenaByName(args[2]);
         if (deleted.equals(false)) {
             sender.sendMessage(ChatColor.YELLOW+"["+ ChatColor.RED+ "❌"+ ChatColor.YELLOW+ "]"
                     +ChatColor.GRAY+

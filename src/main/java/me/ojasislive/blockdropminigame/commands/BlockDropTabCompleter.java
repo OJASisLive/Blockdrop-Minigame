@@ -1,6 +1,6 @@
 package me.ojasislive.blockdropminigame.commands;
 
-import me.ojasislive.blockdropminigame.arena.Arena;
+import me.ojasislive.blockdropminigame.arena.ArenaUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -19,12 +19,13 @@ public class BlockDropTabCompleter implements TabCompleter {
         }
 
         if (args.length == 2 && "arena".equalsIgnoreCase(args[0])) {
-            return Arrays.asList("save","regen","delete");
+            return Arrays.asList("save","regen","delete","settings");
         }
 
-        if (args.length == 3 && Arrays.asList("save","regen","delete").contains(args[1])) {
-            return Arena.getArenaNamesAsList();
+        if (args.length == 3 && Arrays.asList("save","regen","delete","settings").contains(args[1])) {
+            return ArenaUtils.getArenaNamesAsList();
         }
+        //TODO: Add Tabcompletion stuff for settings
         return Collections.emptyList();
     }
 }

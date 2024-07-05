@@ -1,6 +1,6 @@
 package me.ojasislive.blockdropminigame.commandFunctionHandlers;
 
-import me.ojasislive.blockdropminigame.arena.Arena;
+import me.ojasislive.blockdropminigame.arena.ArenaUtils;
 import me.ojasislive.blockdropminigame.hooks.WEHook;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -20,6 +20,16 @@ public class RegenCommandHandler {
             return 0;
         }
 
+        if (ArenaUtils.getArenaByName(args[2]) == null) {
+            sender.sendMessage(ChatColor.YELLOW+"["+ ChatColor.RED+ "❌"+ ChatColor.YELLOW+ "]"
+                    +ChatColor.GRAY+
+                    "Caching Error Occurred!" +
+                    " - No such Arena (or) Arena was not loaded correctly." +
+                    " This might have happened because of manually changing arenas.yml");
+
+            return 0;
+        }
+
         File file = new File(plugin.getDataFolder(), "schematic/" + args[2] + ".schem");
 
         if (!file.exists()) {
@@ -30,22 +40,12 @@ public class RegenCommandHandler {
             return 0;
         }
 
-        if (Arena.getArenaByName(args[2]) == null) {
-            sender.sendMessage(ChatColor.YELLOW+"["+ ChatColor.RED+ "❌"+ ChatColor.YELLOW+ "]"
-                    +ChatColor.GRAY+
-                    "Caching Error Occurred!" +
-                    " - Arena was not loaded correctly." +
-                    " This might have happened because of manually changing arenas.yml");
-
-            return 0;
-        }
-
-        Location arenaMinLocation = Objects.requireNonNull(Arena.getArenaByName(args[2]),"Arena loading error!").getMinLocation();
+        Location arenaMinLocation = Objects.requireNonNull(ArenaUtils.getArenaByName(args[2]),"Arena loading error!").getMinLocation();
         if (arenaMinLocation == null) {
             sender.sendMessage(ChatColor.YELLOW+"["+ ChatColor.RED+ "❌"+ ChatColor.YELLOW+ "]"
                     +ChatColor.GRAY+
                     "Caching Error Occurred!" +
-                    " - No schematic associated with arena or the schematic was deleted.");
+                    " - No schematic associated with arena or the schematic is corrupted.");
 
             return 0;
         }

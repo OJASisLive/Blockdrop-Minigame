@@ -1,7 +1,7 @@
 package me.ojasislive.blockdropminigame.commandFunctionHandlers;
 
 import me.ojasislive.blockdropminigame.Blockdropminigame;
-import me.ojasislive.blockdropminigame.arena.Arena;
+import me.ojasislive.blockdropminigame.arena.ArenaUtils;
 import me.ojasislive.blockdropminigame.hooks.WEHook;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -22,7 +22,7 @@ public class SaveCommandHandler {
         }
 
         String arenaName = args[2];
-        if (Arena.getArenaByName(arenaName) != null) {
+        if (ArenaUtils.getArenaByName(arenaName) != null) {
             sender.sendMessage(ChatColor.YELLOW + "[" + ChatColor.RED + "❌" + ChatColor.YELLOW + "]"
                     + ChatColor.GRAY +
                     "The arena " + arenaName + " already exists! Delete it first.");
