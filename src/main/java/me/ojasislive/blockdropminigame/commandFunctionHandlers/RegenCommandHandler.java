@@ -20,7 +20,7 @@ public class RegenCommandHandler {
             return 0;
         }
 
-        File file = new File(plugin.getDataFolder(), "schematic/" + args[1] + ".schem");
+        File file = new File(plugin.getDataFolder(), "schematic/" + args[2] + ".schem");
 
         if (!file.exists()) {
             sender.sendMessage(ChatColor.YELLOW+"["+ ChatColor.RED+ "❌"+ ChatColor.YELLOW+ "]"
@@ -30,7 +30,7 @@ public class RegenCommandHandler {
             return 0;
         }
 
-        if (Arena.getArenaByName(args[1]) == null) {
+        if (Arena.getArenaByName(args[2]) == null) {
             sender.sendMessage(ChatColor.YELLOW+"["+ ChatColor.RED+ "❌"+ ChatColor.YELLOW+ "]"
                     +ChatColor.GRAY+
                     "Caching Error Occurred!" +
@@ -40,7 +40,7 @@ public class RegenCommandHandler {
             return 0;
         }
 
-        Location arenaMinLocation = Objects.requireNonNull(Arena.getArenaByName(args[1]),"Arena loading error!").getMinLocation();
+        Location arenaMinLocation = Objects.requireNonNull(Arena.getArenaByName(args[2]),"Arena loading error!").getMinLocation();
         if (arenaMinLocation == null) {
             sender.sendMessage(ChatColor.YELLOW+"["+ ChatColor.RED+ "❌"+ ChatColor.YELLOW+ "]"
                     +ChatColor.GRAY+
