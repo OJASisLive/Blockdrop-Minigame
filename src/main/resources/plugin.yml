@@ -15,5 +15,5 @@ commands:
     permission: blockdropminigame.arena
 
 permissions:
-  blockdropminigame.arena:
+  blockdropminigame.admin:
     default: op

@@ -1,5 +1,6 @@
 package me.ojasislive.blockdropminigame.arena;
 
+import me.ojasislive.blockdropminigame.Blockdropminigame;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -44,6 +45,7 @@ public class Arena {
             arenasConfig.set(path + ".minLocation", serializeLocation(arena.getMinLocation()));
             arenasConfig.set(path + ".spawnLocations", serializeLocations(arena.getSpawnLocations()));
             arenasConfig.set(path + ".schematicFilePath", arena.getSchematicFilePath()); // Save the schematic file path
+
         }
         try {
             arenasConfig.save(arenasFile);
@@ -131,14 +133,28 @@ public class Arena {
         return null; // or throw an exception if you prefer
     }
 
+    private static final Blockdropminigame plugin = Blockdropminigame.getInstance();
+
     public static boolean removeArenaByName(String arenaName) {
         Iterator<Arena> iterator = arenas.iterator();
         while (iterator.hasNext()) {
             Arena arena = iterator.next();
             if (arena.getArenaName().equals(arenaName)) {
-                iterator.remove();
-                saveArenas();
-                return true;
+                File file = new File(plugin.getDataFolder(), "schematic/" + arenaName + ".schem");
+                boolean isDeleted = file.delete();
+                List<String> arenasInConfig =arenasConfig.getStringList("arenas");
+                arenasInConfig.remove(arenaName);
+                arenasConfig.set("arenas",arenasInConfig);
+                try {
+                    arenasConfig.save(arenasFile);
+                    if (isDeleted | !file.exists()) {
+                        iterator.remove();
+                        saveArenas();
+                        return true;
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return false; // or throw an exception if you prefer
