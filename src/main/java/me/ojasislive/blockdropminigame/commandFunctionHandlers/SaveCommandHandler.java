@@ -11,7 +11,7 @@ import org.bukkit.plugin.Plugin;
 import java.io.File;
 
 public class SaveCommandHandler {
-    public static int handle(Player sender, String[] args, Tuple<Location, Location> selection) {
+    public int handle(Player sender, String[] args, Tuple<Location, Location> selection, Plugin plugin) {
         if (!arePositionsSelected(sender, selection)) {
             return 0;
         }
@@ -29,7 +29,7 @@ public class SaveCommandHandler {
             return 0;
         }
 
-        if (!createSchematicDirectory(sender, arenaName)) {
+        if (!createSchematicDirectory(sender, arenaName, plugin)) {
             return 0;
         }
 
@@ -37,7 +37,7 @@ public class SaveCommandHandler {
         return 1;
     }
 
-    private static boolean arePositionsSelected(Player sender, Tuple<Location, Location> selection) {
+    private boolean arePositionsSelected(Player sender, Tuple<Location, Location> selection) {
         if (selection.getFirst() == null || selection.getSecond() == null) {
             sender.sendMessage(ChatColor.YELLOW + "[" + ChatColor.RED + "❌" + ChatColor.YELLOW + "]"
                     + ChatColor.GRAY +
@@ -47,14 +47,13 @@ public class SaveCommandHandler {
         return true;
     }
 
-    private static void sendUsageMessage(Player sender) {
+    private void sendUsageMessage(Player sender) {
         sender.sendMessage(ChatColor.YELLOW + "[" + ChatColor.RED + "🛑" + ChatColor.YELLOW + "]"
                 + ChatColor.GRAY +
                 "Usage: /blockdrop arena save <name>");
     }
 
-    private static boolean createSchematicDirectory(Player sender, String arenaName) {
-        Plugin plugin = Blockdropminigame.getInstance();
+    private boolean createSchematicDirectory(Player sender, String arenaName, Plugin plugin) {
         File file = new File(plugin.getDataFolder(), "schematic/" + arenaName + ".schem");
 
         if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
@@ -66,7 +65,7 @@ public class SaveCommandHandler {
         return true;
     }
 
-    private static void saveSchematic(Player sender, Tuple<Location, Location> selection, String arenaName) {
+    private void saveSchematic(Player sender, Tuple<Location, Location> selection, String arenaName) {
         Plugin plugin = Blockdropminigame.getInstance();
         File file = new File(plugin.getDataFolder(), "schematic/" + arenaName + ".schem");
 

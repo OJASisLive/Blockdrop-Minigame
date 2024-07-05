@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 public class Arena {
 
@@ -24,6 +25,7 @@ public class Arena {
         arenasFile = new File(dataFolder, "arenas.yml");
         if (!arenasFile.exists()) {
             try {
+                //noinspection ResultOfMethodCallIgnored
                 arenasFile.createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -56,14 +58,17 @@ public class Arena {
 
     private static void loadArenas() {
         if (arenasConfig.contains("arenas")) {
-            for (String arenaName : arenasConfig.getConfigurationSection("arenas").getKeys(false)) {
+            for (String arenaName : Objects.requireNonNull(arenasConfig.getConfigurationSection("arenas"),
+                    "There are no matching arenas in arenas.yml!").getKeys(false)) {
                 String path = "arenas."+arenaName;
-                World world = Bukkit.getWorld(arenasConfig.getString(path+".world"));
+                World world = Bukkit.getWorld(Objects.requireNonNull(arenasConfig.getString(path + ".world"),
+                        "World not found for arena: "+arenaName));
                 if (world == null) {
                     Bukkit.getLogger().warning("World not found for arena: " + arenaName);
                     continue; // Skip loading this arena if world is not found
                 }
-                Location minLocation = deserializeLocation(arenasConfig.getString(path + ".minLocation"));
+                Location minLocation = deserializeLocation(Objects.requireNonNull
+                        (arenasConfig.getString(path + ".minLocation"),"Minlocation not set for arena: "+arenaName));
                 List<Location> spawnLocations = deserializeLocations(arenasConfig.getStringList(path + ".spawnLocations"));
                 String schematicFilePath = arenasConfig.getString(path + ".schematicFilePath"); // Load the schematic file path
                 Arena arena = createArena(arenaName, world, minLocation);
@@ -74,8 +79,14 @@ public class Arena {
     }
 
     private static String serializeLocation(Location location) {
-        return location.getWorld().getName() + "," + location.getX() + "," + location.getY() + "," + location.getZ() + "," + location.getYaw() + "," + location.getPitch();
+        return Objects.requireNonNull(location.getWorld(), "No world for location " + location).getName() + "," +
+                location.getX() + "," +
+                location.getY() + "," +
+                location.getZ() + "," +
+                location.getYaw() + "," +
+                location.getPitch();
     }
+
 
     private static Location deserializeLocation(String str) {
         String[] parts = str.split(",");
@@ -182,7 +193,7 @@ public class Arena {
     }
 
     public Location getMinLocation() {
-        return minLocation;
+        return Objects.requireNonNull(this.minLocation,"The min location is null!");
     }
 
     public World getArenaWorld() {

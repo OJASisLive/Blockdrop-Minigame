@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public class PosCommandHandler {
 
-    public static Map<UUID, Tuple<Location, Location>> handle(Player sender, String[] args, Map<UUID, Tuple<Location, Location>> selections){
+    public Map<UUID, Tuple<Location, Location>> handle(Player sender, String[] args, Map<UUID, Tuple<Location, Location>> selections){
         String param = args[0].toLowerCase();
 
         Tuple<Location, Location> selection =

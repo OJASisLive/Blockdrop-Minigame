@@ -1,11 +1,7 @@
 package me.ojasislive.blockdropminigame.commands;
 
 import me.ojasislive.blockdropminigame.Blockdropminigame;
-import me.ojasislive.blockdropminigame.arena.Arena;
-import me.ojasislive.blockdropminigame.commandFunctionHandlers.PosCommandHandler;
-import me.ojasislive.blockdropminigame.commandFunctionHandlers.SaveCommandHandler;
-import me.ojasislive.blockdropminigame.commandFunctionHandlers.Tuple;
-import me.ojasislive.blockdropminigame.hooks.WEHook;
+import me.ojasislive.blockdropminigame.commandFunctionHandlers.*;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -13,7 +9,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -50,7 +45,8 @@ public final class BlockDropCommandExecutor implements CommandExecutor {
         Player player = (Player) sender;
 
         if(args.length == 1) {
-            selections = PosCommandHandler.handle(player,args,selections);
+            PosCommandHandler posCommandHandler = new PosCommandHandler();
+            selections = posCommandHandler.handle(player,args,selections);
         }
 
         if(args.length > 1 && args[0].equals("arena")) {
@@ -61,84 +57,26 @@ public final class BlockDropCommandExecutor implements CommandExecutor {
                 case "save": {
                     Tuple<Location, Location> selection =
                             selections.getOrDefault(player.getUniqueId(), new Tuple<>(null, null));
-                    if (SaveCommandHandler.handle(player,args,selection) == 0){
+                    SaveCommandHandler saveCommandHandler = new SaveCommandHandler();
+                    if (saveCommandHandler.handle(player,args,selection,plugin) == 0){
                         return true;
                     }
                     break;
                 }
 
                 case "regen": {
-                    if (args.length <= 2) {
-                        sender.sendMessage(ChatColor.YELLOW+"["+ ChatColor.RED+ "🛑"+ ChatColor.YELLOW+ "]"
-                                +ChatColor.GRAY+
-                                "Usage: /blockdrop arena regen <name>");
-
+                    RegenCommandHandler regenCommandHandler = new RegenCommandHandler();
+                    if (regenCommandHandler.handle(player,args,plugin) == 0){
                         return true;
                     }
-
-                    File file = new File(plugin.getDataFolder(), "schematic/" + args[1] + ".schem");
-
-                    if (!file.exists()) {
-                        sender.sendMessage(ChatColor.YELLOW+"["+ ChatColor.RED+ "❌"+ ChatColor.YELLOW+ "]"
-                                +ChatColor.GRAY+
-                                "Schematic not found!");
-
-                        return true;
-                    }
-
-                    if (Arena.getArenaByName(args[1]) == null) {
-                        sender.sendMessage(ChatColor.YELLOW+"["+ ChatColor.RED+ "❌"+ ChatColor.YELLOW+ "]"
-                                +ChatColor.GRAY+
-                                "Caching Error Occurred!" +
-                                " - Arena was not loaded correctly." +
-                                " This might have happened because of manually changing arenas.yml");
-
-                        return true;
-                    }
-
-                    Location arenaMinLocation = Arena.getArenaByName(args[1]).getMinLocation();
-                    if (arenaMinLocation == null) {
-                        sender.sendMessage(ChatColor.YELLOW+"["+ ChatColor.RED+ "❌"+ ChatColor.YELLOW+ "]"
-                                +ChatColor.GRAY+
-                                "Caching Error Occurred!" +
-                                " - No schematic associated with arena or the schematic was deleted.");
-
-                        return true;
-                    }
-
-                    WEHook.paste(arenaMinLocation, file);
-                    sender.sendMessage(ChatColor.AQUA +"["+ ChatColor.GREEN+ "✔"+ ChatColor.AQUA + "]"
-                            +ChatColor.GRAY+
-                            " Schematic pasted at "
-                            + (int) arenaMinLocation.getX() + ","
-                            + (int) arenaMinLocation.getY() + ","
-                            + (int) arenaMinLocation.getZ());
-
                     break;
                 }
 
                 case "delete": {
-                    if (args.length <= 2) {
-                        sender.sendMessage(ChatColor.YELLOW+"["+ ChatColor.RED+ "🛑"+ ChatColor.YELLOW+ "]"
-                                +ChatColor.GRAY+
-                                "Usage: /blockdrop arena delete <name>");
-
+                    DeleteCommandHandler deleteCommandHandler = new DeleteCommandHandler();
+                    if (deleteCommandHandler.handle(player,args) == 0){
                         return true;
                     }
-
-                    Boolean deleted = Arena.removeArenaByName(args[2]);
-                    if (deleted.equals(false)) {
-                        sender.sendMessage(ChatColor.YELLOW+"["+ ChatColor.RED+ "❌"+ ChatColor.YELLOW+ "]"
-                                +ChatColor.GRAY+
-                                " Arena not found!");
-                        return true;
-                    }
-
-                    sender.sendMessage(ChatColor.AQUA +"["+ ChatColor.GREEN+ "✔"+ ChatColor.AQUA + "]"
-                            +ChatColor.GRAY+
-                            " Arena & Schematic Deleted Successfully ");
-
-
                     break;
                 }
                 default:
