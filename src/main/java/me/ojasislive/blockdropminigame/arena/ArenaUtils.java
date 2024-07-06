@@ -85,9 +85,9 @@ public class ArenaUtils {
 
 
     private static void loadArenas() {
-        if (arenasConfig.contains("arenas")) {
-            for (String arenaName : Objects.requireNonNull(arenasConfig.getConfigurationSection("arenas"),
-                    "There are no matching arenas in arenas.yml!").getKeys(false)) {
+        if (arenasConfig.contains("arenas") && arenasConfig.getConfigurationSection("arenas")!=null) {
+
+            for (String arenaName : (arenasConfig.getConfigurationSection("arenas")).getKeys(false)) {
                 String path = "arenas."+arenaName;
                 World world = Bukkit.getWorld(Objects.requireNonNull(arenasConfig.getString(path + ".world"),
                         "World not found for arena: "+arenaName));

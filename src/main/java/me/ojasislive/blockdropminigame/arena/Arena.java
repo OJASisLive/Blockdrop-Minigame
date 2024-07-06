@@ -1,13 +1,15 @@
 package me.ojasislive.blockdropminigame.arena;
 
 import me.ojasislive.blockdropminigame.game.ArenaState;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
-import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 public class Arena {
 
@@ -17,7 +19,6 @@ public class Arena {
         arena.setArenaWorld(arenaWorld);
         arena.setArenaName(arenaName);
         arena.setMinLocation(minLocation);
-        arena.setPlayable(false);
         arena.setActive(false);
         ArenaUtils.addArena(arena);
         ArenaUtils.saveArenas();
@@ -27,10 +28,9 @@ public class Arena {
     private String arenaName;
     private ArenaState state = ArenaState.WAITING;
     private boolean active = false;
-    private boolean playable;
     private World arenaWorld;
     private List<Location> spawnLocations = new ArrayList<>();
-    private List<Player> players = new ArrayList<>();
+    private List<String> players = new ArrayList<>();
     private Location minLocation;
     private String schematicFilePath; // Add this field to store the schematic file path
 
@@ -64,14 +64,6 @@ public class Arena {
 
     public void setState(ArenaState state) {
         this.state = state;
-    }
-
-    public boolean isPlayable() {
-        return this.playable;
-    }
-
-    public void setPlayable(boolean playable) {
-        this.playable = playable;
     }
 
     public void setActive(boolean active) {
@@ -113,16 +105,26 @@ public class Arena {
     //   ArenaUtils.saveArenas();
     //}
 
-    public List<Player> getPlayers() {
+    public List<String> getPlayers() {
         return this.players;
     }
 
-    public void addPlayer(Player player) {
-        this.players.add(player);
+    private List<String> playerNames = new ArrayList<>();
+
+    public List<String> getPlayerNames() {
+        for (String uuidString : this.getPlayers()){
+            OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(uuidString));
+            playerNames.add(player.getName());
+        }
+        return playerNames;
     }
 
-    public void removePlayer(Player player) {
-        this.players.remove(player);
+    public void addPlayer(String playerUUID) {
+        this.players.add(playerUUID);
+    }
+
+    public void removePlayer(String playerUUID) {
+        this.players.remove(playerUUID);
     }
 
     // Add getter and setter for schematic file path

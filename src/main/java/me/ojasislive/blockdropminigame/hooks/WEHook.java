@@ -59,17 +59,18 @@ public final class WEHook {
     public static void paste(Location to, File schematicFile) {
         try (EditSession session = createEditSession(to.getWorld())) {
             ClipboardFormat format = ClipboardFormats.findByFile(schematicFile);
-            ClipboardReader reader = format.getReader(new FileInputStream(schematicFile));
+            if (format != null) {
+                ClipboardReader reader = format.getReader(new FileInputStream(schematicFile));
 
-            Clipboard schematic = reader.read();
+                Clipboard schematic = reader.read();
 
-            Operation operation = new ClipboardHolder(schematic)
-                    .createPaste(session)
-                    .to(BukkitAdapter.asBlockVector(to))
-                    .build();
+                Operation operation = new ClipboardHolder(schematic)
+                        .createPaste(session)
+                        .to(BukkitAdapter.asBlockVector(to))
+                        .build();
 
-            Operations.complete(operation);
-
+                Operations.complete(operation);
+            }
         } catch (final Throwable t) {
             t.printStackTrace();
         }

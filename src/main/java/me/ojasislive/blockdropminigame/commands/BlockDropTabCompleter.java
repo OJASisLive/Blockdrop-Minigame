@@ -8,6 +8,7 @@ import org.bukkit.command.TabCompleter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class BlockDropTabCompleter implements TabCompleter {
     @SuppressWarnings("NullableProblems")
@@ -19,13 +20,47 @@ public class BlockDropTabCompleter implements TabCompleter {
         }
 
         if (args.length == 2 && "arena".equalsIgnoreCase(args[0])) {
-            return Arrays.asList("save","regen","delete","settings");
+            return Arrays.asList("save", "regen", "delete", "settings");
         }
 
-        if (args.length == 3 && Arrays.asList("save","regen","delete","settings").contains(args[1])) {
+        if (args.length == 3 && Arrays.asList("save", "regen", "delete", "settings").contains(args[1])) {
             return ArenaUtils.getArenaNamesAsList();
         }
-        //TODO: Add Tabcompletion stuff for settings
+
+        if (args.length == 4 && "settings".equalsIgnoreCase(args[1])) {
+            return Arrays.asList("get", "set", "add", "remove");
+        }
+
+        if (args.length == 5 && "settings".equalsIgnoreCase(args[1])) {
+            if (Arrays.asList("get","g").contains(args[3].toLowerCase())) {
+                return Arrays.asList("spawnlocations", "active", "state");
+            }if (Arrays.asList("set","s").contains(args[3].toLowerCase())) {
+                return Arrays.asList("active", "state");
+            }
+            if (Arrays.asList("add", "remove").contains(args[3].toLowerCase())) {
+                return Arrays.asList("spawnlocations", "players");
+            }
+        }
+
+        if (args.length == 5 && "settings".equalsIgnoreCase(args[1]) && "get".equalsIgnoreCase(args[3]) &&
+        "players".equalsIgnoreCase(args[4])) {
+            if (ArenaUtils.getArenaNamesAsList().contains(args[2])){
+                return Objects.requireNonNull(ArenaUtils.getArenaByName(args[2]),"Arena not instanced yet").getPlayerNames();
+                //return ArenaUtils.getArenaByName(args[2]).getPlayers();
+            }
+        }
+
+
+        // Further completions for specific values
+        if (args.length == 6 && "settings".equalsIgnoreCase(args[1]) && "set".equalsIgnoreCase(args[3])) {
+            if ("state".equalsIgnoreCase(args[4])) {
+                return Arrays.asList("WAITING", "STARTING", "RUNNING", "RESULTS");
+            }
+            if (Arrays.asList("active","act").contains(args[4].toLowerCase())) {
+                return Arrays.asList("true", "false");
+            }
+        }
+
         return Collections.emptyList();
     }
 }
