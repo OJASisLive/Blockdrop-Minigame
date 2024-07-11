@@ -16,7 +16,7 @@ public class BlockDropTabCompleter implements TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
 
         if (args.length == 1) {
-            return Arrays.asList("pos1", "pos2", "arena");
+            return Arrays.asList("pos1", "pos2", "arena","join","leave");
         }
 
         if (args.length == 2 && "arena".equalsIgnoreCase(args[0])) {
@@ -24,6 +24,8 @@ public class BlockDropTabCompleter implements TabCompleter {
         }
 
         if (args.length == 3 && Arrays.asList("save", "regen", "delete", "settings").contains(args[1])) {
+            return ArenaUtils.getArenaNamesAsList();
+        }if (args.length == 3 && Arrays.asList("join","leave").contains(args[0].toLowerCase())) {
             return ArenaUtils.getArenaNamesAsList();
         }
 

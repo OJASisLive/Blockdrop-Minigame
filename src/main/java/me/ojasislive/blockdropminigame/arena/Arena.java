@@ -1,6 +1,7 @@
 package me.ojasislive.blockdropminigame.arena;
 
 import me.ojasislive.blockdropminigame.game.ArenaState;
+import me.ojasislive.blockdropminigame.game.PlayerCache;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -20,6 +21,7 @@ public class Arena {
         arena.setArenaName(arenaName);
         arena.setMinLocation(minLocation);
         arena.setActive(false);
+        arena.setState(ArenaState.WAITING);
         ArenaUtils.addArena(arena);
         ArenaUtils.saveArenas();
         return arena;
@@ -100,10 +102,6 @@ public class Arena {
         return 0;
     }
 
-    //public void clearSpawnLocations() {
-    //    this.spawnLocations.clear();
-    //   ArenaUtils.saveArenas();
-    //}
 
     public List<String> getPlayers() {
         return this.players;
@@ -114,17 +112,23 @@ public class Arena {
     public List<String> getPlayerNames() {
         for (String uuidString : this.getPlayers()){
             OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(uuidString));
-            playerNames.add(player.getName());
+            this.playerNames.add(player.getName());
         }
-        return playerNames;
+        return this.playerNames;
     }
 
     public void addPlayer(String playerUUID) {
-        this.players.add(playerUUID);
+        if(PlayerCache.addJoinedPlyers(playerUUID, this.arenaName)){
+            this.players.add(playerUUID);
+        }
+
     }
 
     public void removePlayer(String playerUUID) {
-        this.players.remove(playerUUID);
+        if(!this.players.contains(playerUUID)){return;}
+        if(PlayerCache.removeJoinedPlayers(playerUUID)) {
+            this.players.remove(playerUUID);
+        }
     }
 
     // Add getter and setter for schematic file path

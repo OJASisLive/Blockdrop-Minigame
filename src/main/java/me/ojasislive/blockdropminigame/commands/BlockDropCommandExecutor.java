@@ -50,6 +50,18 @@ public final class BlockDropCommandExecutor implements CommandExecutor {
                 player.sendMessage(msg);
             }
             return true;
+        }if (args.length == 3 && ("leave".equalsIgnoreCase(args[0]))){
+            String arenaName = args[1];
+            String playerName = args[2];
+            String msg = JoinLeaveHandler.leaveArena(arenaName,playerName);
+            if (sender instanceof ConsoleCommandSender){
+                Bukkit.getLogger().info(msg);
+            }
+            if (sender instanceof Player){
+                Player player = (Player) sender;
+                player.sendMessage(msg);
+            }
+            return true;
         }
 
 
