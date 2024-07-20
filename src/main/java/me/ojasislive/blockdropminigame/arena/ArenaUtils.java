@@ -1,6 +1,7 @@
 package me.ojasislive.blockdropminigame.arena;
 
 import me.ojasislive.blockdropminigame.Blockdropminigame;
+import me.ojasislive.blockdropminigame.game.task.Countdown;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -9,14 +10,11 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class ArenaUtils {
 
-    private static List<Arena> arenas = new ArrayList<>();
+    private static final List<Arena> arenas = new ArrayList<>();
 
     public static List<Arena> getArenas() {
         return arenas;
@@ -74,7 +72,8 @@ public class ArenaUtils {
             arenasConfig.set(path + ".minLocation", serializeLocation(arena.getMinLocation()));
             arenasConfig.set(path + ".spawnLocations", serializeLocations(arena.getSpawnLocations()));
             arenasConfig.set(path + ".schematicFilePath", arena.getSchematicFilePath()); // Save the schematic file path
-
+            arenasConfig.set(path + ".maxplayers",arena.getMaxPlayersLimit());
+            arenasConfig.set(path + ".active",arena.isActive());
         }
         try {
             arenasConfig.save(arenasFile);
@@ -95,11 +94,15 @@ public class ArenaUtils {
                     Bukkit.getLogger().warning("World not found for arena: " + arenaName);
                     continue; // Skip loading this arena if world is not found
                 }
+                int maxplayers = arenasConfig.getInt(path + ".maxplayers");
+                boolean active = arenasConfig.getBoolean(path+".active");
                 Location minLocation = deserializeLocation(Objects.requireNonNull
                         (arenasConfig.getString(path + ".minLocation"),"Minlocation not set for arena: "+arenaName));
                 List<Location> spawnLocations = deserializeLocations(arenasConfig.getStringList(path + ".spawnLocations"));
                 String schematicFilePath = arenasConfig.getString(path + ".schematicFilePath"); // Load the schematic file path
                 Arena arena = Arena.createArena(arenaName, world, minLocation);
+                arena.setMaxPlayersLimit(maxplayers);
+                arena.setActive(active);
                 arena.setSpawnLocations(spawnLocations);
                 arena.setSchematicFilePath(schematicFilePath); // Set the schematic file path
             }
@@ -143,7 +146,7 @@ public class ArenaUtils {
         return locations;
     }
 
-    private static final Blockdropminigame plugin = Blockdropminigame.getInstance();
+    private static Blockdropminigame plugin = Blockdropminigame.getInstance();
 
     public static boolean removeArenaByName(String arenaName) {
         Iterator<Arena> iterator = getArenas().iterator();
@@ -167,7 +170,46 @@ public class ArenaUtils {
                 }
             }
         }
-        return false; // or throw an exception if you prefer
+        return false;
+    }
+
+    //CountDown logic
+    private final Map<String, Countdown> countdowns = new HashMap<>();
+
+
+    public void startCountdown(String arenaName, int time, Runnable onStart) {
+        if (!countdowns.containsKey(arenaName)) {
+            Countdown countdown = new Countdown(plugin, time, onStart);
+            countdowns.put(arenaName, countdown);
+            countdown.start();
+        }
+
+
+    }
+
+    public void resetCountdown(String arenaName, int newTime) {
+        if (countdowns.containsKey(arenaName)) {
+            countdowns.get(arenaName).reset(newTime);
+        } else {
+            startCountdown(arenaName, newTime, () -> {}); // Provide a default onStart action
+        }
+    }
+
+    public void cancelCountdown(String arenaName) {
+        if (countdowns.containsKey(arenaName)) {
+            countdowns.get(arenaName).cancel();
+        }
+    }
+    private static ArenaUtils instance;
+    private ArenaUtils(Blockdropminigame plugin) {
+        ArenaUtils.plugin = plugin;
+    }
+
+    public static ArenaUtils getInstance() {
+        if (instance == null) {
+            instance = new ArenaUtils(Blockdropminigame.getInstance());
+        }
+        return instance;
     }
 
 }

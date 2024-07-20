@@ -1,6 +1,7 @@
 package me.ojasislive.blockdropminigame.arena;
 
 import me.ojasislive.blockdropminigame.game.ArenaState;
+import me.ojasislive.blockdropminigame.game.GameStateHandler;
 import me.ojasislive.blockdropminigame.game.PlayerCache;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -32,9 +33,18 @@ public class Arena {
     private boolean active = false;
     private World arenaWorld;
     private List<Location> spawnLocations = new ArrayList<>();
-    private List<String> players = new ArrayList<>();
+    private final List<String> players = new ArrayList<>();
     private Location minLocation;
+    private int maxPlayersLimit;
     private String schematicFilePath; // Add this field to store the schematic file path
+
+    public int getMaxPlayersLimit() {
+        return maxPlayersLimit;
+    }
+
+    public void setMaxPlayersLimit(int maxPlayersLimit) {
+        this.maxPlayersLimit = maxPlayersLimit;
+    }
 
     public void setMinLocation(Location minLocation) {
         this.minLocation = minLocation;
@@ -69,7 +79,9 @@ public class Arena {
     }
 
     public void setActive(boolean active) {
-        this.active = active;
+        if(this.getState().equals(ArenaState.WAITING)){
+            this.active = active && this.getSpawnLocations().size() >= this.maxPlayersLimit;
+        }
     }
 
     public boolean isActive() {
@@ -107,7 +119,7 @@ public class Arena {
         return this.players;
     }
 
-    private List<String> playerNames = new ArrayList<>();
+    private final List<String> playerNames = new ArrayList<>();
 
     public List<String> getPlayerNames() {
         for (String uuidString : this.getPlayers()){
@@ -119,7 +131,13 @@ public class Arena {
 
     public void addPlayer(String playerUUID) {
         if(PlayerCache.addJoinedPlyers(playerUUID, this.arenaName)){
-            this.players.add(playerUUID);
+            if(this.players.size()<this.spawnLocations.size()) {
+                this.players.add(playerUUID);
+                GameStateHandler gameStateHandler = new GameStateHandler();
+                gameStateHandler.gameStarter(this);
+            }else{
+                PlayerCache.removeJoinedPlayers(playerUUID);
+            }
         }
 
     }
@@ -128,6 +146,8 @@ public class Arena {
         if(!this.players.contains(playerUUID)){return;}
         if(PlayerCache.removeJoinedPlayers(playerUUID)) {
             this.players.remove(playerUUID);
+            GameStateHandler gameStateHandler = new GameStateHandler();
+            gameStateHandler.gameStarter(this);
         }
     }
 

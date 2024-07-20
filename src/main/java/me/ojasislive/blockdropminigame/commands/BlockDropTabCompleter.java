@@ -23,9 +23,11 @@ public class BlockDropTabCompleter implements TabCompleter {
             return Arrays.asList("save", "regen", "delete", "settings");
         }
 
-        if (args.length == 3 && Arrays.asList("save", "regen", "delete", "settings").contains(args[1])) {
+        if (args.length == 2 && Arrays.asList("join","leave").contains(args[0].toLowerCase())) {
             return ArenaUtils.getArenaNamesAsList();
-        }if (args.length == 3 && Arrays.asList("join","leave").contains(args[0].toLowerCase())) {
+        }
+
+        if (args.length == 3 && Arrays.asList("save", "regen", "delete", "settings").contains(args[1])) {
             return ArenaUtils.getArenaNamesAsList();
         }
 
@@ -35,9 +37,9 @@ public class BlockDropTabCompleter implements TabCompleter {
 
         if (args.length == 5 && "settings".equalsIgnoreCase(args[1])) {
             if (Arrays.asList("get","g").contains(args[3].toLowerCase())) {
-                return Arrays.asList("spawnlocations", "active", "state");
+                return Arrays.asList("spawnlocations", "active", "state","maxplayers");
             }if (Arrays.asList("set","s").contains(args[3].toLowerCase())) {
-                return Arrays.asList("active", "state");
+                return Arrays.asList("active", "state","maxplayers");
             }
             if (Arrays.asList("add", "remove").contains(args[3].toLowerCase())) {
                 return Arrays.asList("spawnlocations", "players");

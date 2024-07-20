@@ -63,6 +63,9 @@ public class SettingsCommandHandler {
             case "players":
                 sender.sendMessage(ChatColor.GREEN + "Players: " + arena.getPlayers().toString());
                 break;
+            case "maxplayers":
+                sender.sendMessage(ChatColor.GREEN + "MaxPlayers: " + arena.getMaxPlayersLimit());
+                break;
             default:
                 sender.sendMessage(ChatColor.YELLOW + "[" + ChatColor.RED + "🛑" + ChatColor.YELLOW + "]"
                         + ChatColor.GRAY + "Invalid setting: " + setting);
@@ -80,9 +83,23 @@ public class SettingsCommandHandler {
         String value = args[5].toLowerCase();
         switch (setting) {
             case "active":
-                boolean active = Boolean.parseBoolean(value);
-                arena.setActive(active);
-                sender.sendMessage(ChatColor.GREEN + "Active set to: " + active);
+                if(arena.getState().equals(ArenaState.WAITING)) {
+                    boolean active = Boolean.parseBoolean(value);
+                    arena.setActive(active);
+                    sender.sendMessage(ChatColor.GREEN + "Active set to: " + active);
+                }else {
+                    sender.sendMessage(ChatColor.RED+"Cannot deactivate the arena because a game is going on in the arena");
+                }
+                break;
+            case "maxplayers":
+                if(arena.isActive()){
+                    sender.sendMessage(ChatColor.RED + "(Error!) Active is set to: true. You need to deactivate the arena");
+                    break;
+                }
+                int maxplayers = Integer.parseInt(value);
+                arena.setMaxPlayersLimit(maxplayers);
+                sender.sendMessage(ChatColor.GREEN+"Maxplayers set to: "+maxplayers);
+                sender.sendMessage(ChatColor.RED + "(Reminder) Active is set to: false. You need to reactivate the arena");
                 break;
             case "state":
                 try {
