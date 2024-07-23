@@ -1,6 +1,7 @@
 package me.ojasislive.blockdropminigame.arena;
 
 import me.ojasislive.blockdropminigame.Blockdropminigame;
+import me.ojasislive.blockdropminigame.game.ArenaState;
 import me.ojasislive.blockdropminigame.game.task.Countdown;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -49,6 +50,7 @@ public class ArenaUtils {
         arenasFile = new File(dataFolder, "arenas.yml");
         if (!arenasFile.exists()) {
             try {
+                Bukkit.getLogger().warning("Arena file does not exist");
                 //noinspection ResultOfMethodCallIgnored
                 arenasFile.createNewFile();
             } catch (IOException e) {
@@ -74,6 +76,7 @@ public class ArenaUtils {
             arenasConfig.set(path + ".schematicFilePath", arena.getSchematicFilePath()); // Save the schematic file path
             arenasConfig.set(path + ".maxplayers",arena.getMaxPlayersLimit());
             arenasConfig.set(path + ".active",arena.isActive());
+            Bukkit.getLogger().info("Saved Arena "+arena.getArenaName());
         }
         try {
             arenasConfig.save(arenasFile);
@@ -95,15 +98,16 @@ public class ArenaUtils {
                     continue; // Skip loading this arena if world is not found
                 }
                 int maxplayers = arenasConfig.getInt(path + ".maxplayers");
-                boolean active = arenasConfig.getBoolean(path+".active");
+                boolean active = Boolean.parseBoolean(arenasConfig.getString(path + ".active"));
                 Location minLocation = deserializeLocation(Objects.requireNonNull
                         (arenasConfig.getString(path + ".minLocation"),"Minlocation not set for arena: "+arenaName));
                 List<Location> spawnLocations = deserializeLocations(arenasConfig.getStringList(path + ".spawnLocations"));
                 String schematicFilePath = arenasConfig.getString(path + ".schematicFilePath"); // Load the schematic file path
                 Arena arena = Arena.createArena(arenaName, world, minLocation);
                 arena.setMaxPlayersLimit(maxplayers);
-                arena.setActive(active);
+                arena.setState(ArenaState.WAITING);
                 arena.setSpawnLocations(spawnLocations);
+                arena.setActive(active);//fixed logical error
                 arena.setSchematicFilePath(schematicFilePath); // Set the schematic file path
             }
         }
@@ -162,7 +166,6 @@ public class ArenaUtils {
                     arenasConfig.save(arenasFile);
                     if (isDeleted | !file.exists()) {
                         iterator.remove();
-                        ArenaUtils.saveArenas();
                         return true;
                     }
                 } catch (IOException e) {

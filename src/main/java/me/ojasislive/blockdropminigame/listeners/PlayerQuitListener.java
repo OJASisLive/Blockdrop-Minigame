@@ -15,8 +15,8 @@ public class PlayerQuitListener implements Listener {
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent event){
         Player player = event.getPlayer();
-        if(PlayerCache.getJoinedPlayers().containsKey(player.getName())){
-            String arenaName = PlayerCache.getJoinedPlayers().get(player.getName());
+        if(PlayerCache.getJoinedPlayers().containsKey(player.getUniqueId().toString())){
+            String arenaName = PlayerCache.getJoinedPlayers().get(player.getUniqueId().toString());
             Arena arena = ArenaUtils.getArenaByName(arenaName);
             if (arena != null) {
                 arena.removePlayer(player.getUniqueId().toString());
@@ -25,7 +25,6 @@ public class PlayerQuitListener implements Listener {
                 Bukkit.getLogger().severe("Player "+player.getName()+" can not be removed from non existing Arena!");
 
             }
-            PlayerCache.removeJoinedPlayers(player.getUniqueId().toString());
             Bukkit.getLogger().info(ChatColor.GREEN +player.getName()+" removed from Arena "+arenaName);
         }
     }

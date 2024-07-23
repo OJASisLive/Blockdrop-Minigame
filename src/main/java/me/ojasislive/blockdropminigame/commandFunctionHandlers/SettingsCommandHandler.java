@@ -119,9 +119,9 @@ public class SettingsCommandHandler {
     }
 
     private void handleAdd(Player sender, Arena arena, String setting, String[] args) {
-        if (args.length < 6) {
+        if (args.length < 5) {
             sender.sendMessage(ChatColor.YELLOW + "[" + ChatColor.RED + "🛑" + ChatColor.YELLOW + "]"
-                    + ChatColor.GRAY + "Usage: /blockdrop arena settings <arenaname> add <spawnlocations> <value>");
+                    + ChatColor.GRAY + "Usage: /blockdrop arena settings <arenaname> add <spawnlocations>");
             return;
         }
 
@@ -129,7 +129,7 @@ public class SettingsCommandHandler {
             Location location = sender.getLocation();
             int added = arena.addSpawnLocation(location);
             if (added == 0) {
-                sender.sendMessage(ChatColor.RED + "Maximum 10 spawn ocations only!");
+                sender.sendMessage(ChatColor.RED + "Maximum"+arena.getMaxPlayersLimit()+" spawn locations only!");
                 return;
             }
             sender.sendMessage(ChatColor.GREEN + "Added spawn location: " + location);

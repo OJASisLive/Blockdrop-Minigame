@@ -41,8 +41,8 @@ public class BlockDropTabCompleter implements TabCompleter {
             }if (Arrays.asList("set","s").contains(args[3].toLowerCase())) {
                 return Arrays.asList("active", "state","maxplayers");
             }
-            if (Arrays.asList("add", "remove").contains(args[3].toLowerCase())) {
-                return Arrays.asList("spawnlocations", "players");
+            if (Arrays.asList("add", "remove", "a", "r").contains(args[3].toLowerCase())) {
+                return Collections.singletonList("spawnlocations");
             }
         }
 

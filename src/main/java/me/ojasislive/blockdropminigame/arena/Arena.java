@@ -24,7 +24,6 @@ public class Arena {
         arena.setActive(false);
         arena.setState(ArenaState.WAITING);
         ArenaUtils.addArena(arena);
-        ArenaUtils.saveArenas();
         return arena;
     }
 
@@ -80,7 +79,7 @@ public class Arena {
 
     public void setActive(boolean active) {
         if(this.getState().equals(ArenaState.WAITING)){
-            this.active = active && this.getSpawnLocations().size() >= this.maxPlayersLimit;
+            this.active = active && this.spawnLocations.size() >= this.maxPlayersLimit;
         }
     }
 
@@ -89,9 +88,8 @@ public class Arena {
     }
 
     public int addSpawnLocation(Location location) {
-        if (spawnLocations.size() < 10) {
+        if (this.spawnLocations.size() < this.maxPlayersLimit) {
             this.spawnLocations.add(location);
-            ArenaUtils.saveArenas();
             return 1;
         }
         return 0;
@@ -108,7 +106,6 @@ public class Arena {
     public int removeSpawnLocation(int index) {
         if (this.spawnLocations.size() > index) {
             this.spawnLocations.remove(index);
-            ArenaUtils.saveArenas();
             return 1;
         }
         return 0;
@@ -143,7 +140,6 @@ public class Arena {
     }
 
     public void removePlayer(String playerUUID) {
-        if(!this.players.contains(playerUUID)){return;}
         if(PlayerCache.removeJoinedPlayers(playerUUID)) {
             this.players.remove(playerUUID);
             GameStateHandler gameStateHandler = new GameStateHandler();
