@@ -130,7 +130,7 @@ public class Arena {
         if(PlayerCache.addJoinedPlyers(playerUUID, this.arenaName)){
             if(this.players.size()<this.spawnLocations.size()) {
                 this.players.add(playerUUID);
-                GameStateHandler gameStateHandler = new GameStateHandler();
+                GameStateHandler gameStateHandler = GameStateHandler.getInstance();
                 gameStateHandler.gameStarter(this);
             }else{
                 PlayerCache.removeJoinedPlayers(playerUUID);
@@ -142,7 +142,7 @@ public class Arena {
     public void removePlayer(String playerUUID) {
         if(PlayerCache.removeJoinedPlayers(playerUUID)) {
             this.players.remove(playerUUID);
-            GameStateHandler gameStateHandler = new GameStateHandler();
+            GameStateHandler gameStateHandler = GameStateHandler.getInstance();
             gameStateHandler.gameStarter(this);
         }
     }

@@ -14,6 +14,16 @@ import java.util.UUID;
 
 public class GameStateHandler {
 
+    private static final GameStateHandler instance = new GameStateHandler();
+
+    private GameStateHandler() {
+        // private constructor to prevent instantiation
+    }
+
+    public static GameStateHandler getInstance() {
+        return instance;
+    }
+
     Plugin plugin = Blockdropminigame.getInstance();
     private void startGameRunnable(Arena arena) {
         arena.setState(ArenaState.STARTING);

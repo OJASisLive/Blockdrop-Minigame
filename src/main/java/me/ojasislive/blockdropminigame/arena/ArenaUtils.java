@@ -201,6 +201,7 @@ public class ArenaUtils {
     public void cancelCountdown(String arenaName) {
         if (countdowns.containsKey(arenaName)) {
             countdowns.get(arenaName).cancel();
+            countdowns.remove(arenaName);
         }
     }
     private static ArenaUtils instance;
