@@ -15,12 +15,17 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.io.Closer;
 import me.ojasislive.blockdropminigame.arena.Arena;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public final class WEHook {
 
@@ -30,6 +35,7 @@ public final class WEHook {
             EditSession editSession = createEditSession(primary.getWorld());
 
             BlockVector3 minPoint = region.getMinimumPoint();
+            BlockVector3 maxPoint = region.getMaximumPoint();
 
             BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
             ForwardExtentCopy copy = new ForwardExtentCopy(editSession, region, clipboard, minPoint);
@@ -47,8 +53,9 @@ public final class WEHook {
                 name = name.substring(0, name.lastIndexOf(".schem"));
             }
 
-            Location location = new Location(bukkitWorld, minPoint.getX(), minPoint.getY(), minPoint.getZ());
-            Arena arena = Arena.createArena(name, bukkitWorld, location);
+            Location minLocation = new Location(bukkitWorld, minPoint.getX(), minPoint.getY(), minPoint.getZ());
+            Location maxLocation = new Location(bukkitWorld, maxPoint.getX(), maxPoint.getY(), maxPoint.getZ());
+            Arena arena = Arena.createArena(name, bukkitWorld, minLocation, maxLocation);
             arena.setSchematicFilePath(schematicFile.getAbsolutePath()); // Set the schematic file path
 
         } catch (final Throwable t) {
@@ -74,6 +81,46 @@ public final class WEHook {
         } catch (final Throwable t) {
             t.printStackTrace();
         }
+    }
+    public static List<Location> getMinMaxLocationsFromSchematic(String schematicFilePath) {
+        try {
+            File schematicFile = new File(schematicFilePath);
+
+            if (!schematicFile.exists()) {
+                Bukkit.getLogger().warning(ChatColor.YELLOW+"["+ ChatColor.RED+ "❌"+ ChatColor.YELLOW+ "]"
+                        +ChatColor.GRAY+
+                        "Schematic not found!");
+
+                return new ArrayList<>();
+            }
+
+            ClipboardFormat format = ClipboardFormats.findByFile(schematicFile);
+            if (format != null) {
+                ClipboardReader reader = format.getReader(new FileInputStream(schematicFile));
+
+                Clipboard schematic = reader.read();
+                BlockVector3 minimumPoint = schematic.getMinimumPoint();
+                BlockVector3 maximumPoint = schematic.getMaximumPoint();
+
+                Location minLocation = new Location(BukkitAdapter.asBukkitWorld(
+                        schematic.getRegion().getWorld()).getWorld(),
+                        minimumPoint.getX(),
+                        minimumPoint.getY(),
+                        minimumPoint.getZ(),0,0);
+
+                Location maxLocation = new Location(BukkitAdapter.asBukkitWorld(
+                        schematic.getRegion().getWorld()).getWorld(),
+                        maximumPoint.getX(),
+                        maximumPoint.getY(),
+                        maximumPoint.getZ());
+
+                return Arrays.asList(minLocation,maxLocation);
+
+            }
+        } catch (final Throwable t) {
+            t.printStackTrace();
+        }
+        return new ArrayList<>();
     }
 
     private static EditSession createEditSession(World world) {

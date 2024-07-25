@@ -16,11 +16,12 @@ import java.util.UUID;
 public class Arena {
 
 
-    public static Arena createArena(String arenaName, World arenaWorld, Location minLocation) {
+    public static Arena createArena(String arenaName, World arenaWorld, Location minLocation, Location maxLocation) {
         Arena arena = new Arena();
         arena.setArenaWorld(arenaWorld);
         arena.setArenaName(arenaName);
         arena.setMinLocation(minLocation);
+        arena.setMaxLocation(maxLocation);
         arena.setActive(false);
         arena.setState(ArenaState.WAITING);
         ArenaUtils.addArena(arena);
@@ -34,8 +35,17 @@ public class Arena {
     private List<Location> spawnLocations = new ArrayList<>();
     private final List<String> players = new ArrayList<>();
     private Location minLocation;
+    private Location maxLocation;
     private int maxPlayersLimit;
     private String schematicFilePath; // Add this field to store the schematic file path
+
+    public void setMaxLocation(Location maxLocation) {
+        this.maxLocation = maxLocation;
+    }
+
+    public Location getMaxLocation() {
+        return maxLocation;
+    }
 
     public int getMaxPlayersLimit() {
         return maxPlayersLimit;
@@ -89,10 +99,12 @@ public class Arena {
 
     public int addSpawnLocation(Location location) {
         if (this.spawnLocations.size() < this.maxPlayersLimit) {
-            this.spawnLocations.add(location);
-            return 1;
+            if (ArenaUtils.isInRegion(location,this)) {
+                this.spawnLocations.add(location);
+                return 1; //successful
+            }else {return 2;} //Location out of bonds
         }
-        return 0;
+        return 0;//max locations reached
     }
 
     public void setSpawnLocations(List<Location> spawnLocations) {

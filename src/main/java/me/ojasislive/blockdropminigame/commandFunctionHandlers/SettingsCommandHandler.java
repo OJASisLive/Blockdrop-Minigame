@@ -129,8 +129,12 @@ public class SettingsCommandHandler {
             Location location = sender.getLocation();
             int added = arena.addSpawnLocation(location);
             if (added == 0) {
-                sender.sendMessage(ChatColor.RED + "Maximum"+arena.getMaxPlayersLimit()+" spawn locations only!");
+                sender.sendMessage(ChatColor.RED + "Maximum "+arena.getMaxPlayersLimit()+" spawn locations only!");
                 return;
+            }else if(added==2){
+                sender.sendMessage(ChatColor.RED + "Location "+location+" is out of bounds of region");
+                sender.sendMessage(ChatColor.GRAY+"MinLocation: "+arena.getMinLocation());
+                sender.sendMessage(ChatColor.GRAY+"MaxLocation: "+arena.getMaxLocation());
             }
             sender.sendMessage(ChatColor.GREEN + "Added spawn location: " + location);
         } else {

@@ -3,6 +3,7 @@ package me.ojasislive.blockdropminigame.arena;
 import me.ojasislive.blockdropminigame.Blockdropminigame;
 import me.ojasislive.blockdropminigame.game.ArenaState;
 import me.ojasislive.blockdropminigame.game.task.Countdown;
+import me.ojasislive.blockdropminigame.hooks.WEHook;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -42,6 +43,13 @@ public class ArenaUtils {
         return names;
     }
 
+    public static boolean isInRegion(Location location, Arena arena){
+        Location minLocation = arena.getMinLocation();
+        Location maxLocation = arena.getMaxLocation();
+        return minLocation.getX() <= location.getX() & location.getX() <= maxLocation.getX() &
+                minLocation.getY() <= location.getY() & location.getY() <= maxLocation.getY() &
+                minLocation.getZ() <= location.getZ() & location.getZ() <= maxLocation.getZ();
+    }
 
     private static File arenasFile;
     private static FileConfiguration arenasConfig;
@@ -72,6 +80,7 @@ public class ArenaUtils {
             String path = "arenas." + arena.getArenaName();
             arenasConfig.set(path + ".world", arena.getArenaWorld().getName());
             arenasConfig.set(path + ".minLocation", serializeLocation(arena.getMinLocation()));
+            arenasConfig.set(path + ".maxLocation", serializeLocation(arena.getMaxLocation()));
             arenasConfig.set(path + ".spawnLocations", serializeLocations(arena.getSpawnLocations()));
             arenasConfig.set(path + ".schematicFilePath", arena.getSchematicFilePath()); // Save the schematic file path
             arenasConfig.set(path + ".maxplayers",arena.getMaxPlayersLimit());
@@ -90,20 +99,44 @@ public class ArenaUtils {
         if (arenasConfig.contains("arenas") && arenasConfig.getConfigurationSection("arenas")!=null) {
 
             for (String arenaName : (arenasConfig.getConfigurationSection("arenas")).getKeys(false)) {
-                String path = "arenas."+arenaName;
+                String path = "arenas." + arenaName;
                 World world = Bukkit.getWorld(Objects.requireNonNull(arenasConfig.getString(path + ".world"),
-                        "World not found for arena: "+arenaName));
+                        "World not found for arena: " + arenaName));
                 if (world == null) {
                     Bukkit.getLogger().warning("World not found for arena: " + arenaName);
                     continue; // Skip loading this arena if world is not found
                 }
+
                 int maxplayers = arenasConfig.getInt(path + ".maxplayers");
                 boolean active = Boolean.parseBoolean(arenasConfig.getString(path + ".active"));
-                Location minLocation = deserializeLocation(Objects.requireNonNull
-                        (arenasConfig.getString(path + ".minLocation"),"Minlocation not set for arena: "+arenaName));
+
                 List<Location> spawnLocations = deserializeLocations(arenasConfig.getStringList(path + ".spawnLocations"));
                 String schematicFilePath = arenasConfig.getString(path + ".schematicFilePath"); // Load the schematic file path
-                Arena arena = Arena.createArena(arenaName, world, minLocation);
+
+                String minLocationString = arenasConfig.getString(path + ".minLocation");
+                String maxLocationString = arenasConfig.getString(path + ".maxLocation");
+
+                Location minLocation = null;
+                Location maxLocation = null;
+
+                if (minLocationString == null | maxLocationString == null) {
+                    Bukkit.getLogger().warning("Minlocation/Maxlocation is not set for arena " + arenaName);
+                    Bukkit.getLogger().warning("Trying to auto-configure Maxlocation for arena " + arenaName);
+                    List<Location> minMaxLocationsFromSchematic = WEHook.getMinMaxLocationsFromSchematic(schematicFilePath);
+                    if (minMaxLocationsFromSchematic.size() != 2) {
+                        Bukkit.getLogger().severe("Schematic not found for arena " + arenaName);
+                        Bukkit.getLogger().severe("This arena won't be loaded");
+                        continue;
+                    } else {
+                        if (maxLocationString == null) {
+                            maxLocation = minMaxLocationsFromSchematic.get(1);
+                        }
+                        if (minLocationString == null) {
+                            minLocation = minMaxLocationsFromSchematic.get(0);
+                        }
+                    }
+                }
+                Arena arena = Arena.createArena(arenaName, world, minLocation, maxLocation);
                 arena.setMaxPlayersLimit(maxplayers);
                 arena.setState(ArenaState.WAITING);
                 arena.setSpawnLocations(spawnLocations);
@@ -186,17 +219,15 @@ public class ArenaUtils {
             countdowns.put(arenaName, countdown);
             countdown.start();
         }
-
-
     }
 
-    public void resetCountdown(String arenaName, int newTime) {
+    /*public void resetCountdown(String arenaName, int newTime) {
         if (countdowns.containsKey(arenaName)) {
             countdowns.get(arenaName).reset(newTime);
         } else {
             startCountdown(arenaName, newTime, () -> {}); // Provide a default onStart action
         }
-    }
+    }*/
 
     public void cancelCountdown(String arenaName) {
         if (countdowns.containsKey(arenaName)) {
