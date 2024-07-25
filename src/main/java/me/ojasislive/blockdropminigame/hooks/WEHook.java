@@ -82,7 +82,7 @@ public final class WEHook {
             t.printStackTrace();
         }
     }
-    public static List<Location> getMinMaxLocationsFromSchematic(String schematicFilePath) {
+    public static List<Location> getMinMaxLocationsFromSchematic(String schematicFilePath, World world) {
         try {
             File schematicFile = new File(schematicFilePath);
 
@@ -102,14 +102,14 @@ public final class WEHook {
                 BlockVector3 minimumPoint = schematic.getMinimumPoint();
                 BlockVector3 maximumPoint = schematic.getMaximumPoint();
 
-                Location minLocation = new Location(BukkitAdapter.asBukkitWorld(
-                        schematic.getRegion().getWorld()).getWorld(),
+                Location minLocation = new Location(
+                        world,
                         minimumPoint.getX(),
                         minimumPoint.getY(),
                         minimumPoint.getZ(),0,0);
 
-                Location maxLocation = new Location(BukkitAdapter.asBukkitWorld(
-                        schematic.getRegion().getWorld()).getWorld(),
+                Location maxLocation = new Location(
+                        world,
                         maximumPoint.getX(),
                         maximumPoint.getY(),
                         maximumPoint.getZ());

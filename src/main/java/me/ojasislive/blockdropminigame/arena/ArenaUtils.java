@@ -122,7 +122,7 @@ public class ArenaUtils {
                 if (minLocationString == null | maxLocationString == null) {
                     Bukkit.getLogger().warning("Minlocation/Maxlocation is not set for arena " + arenaName);
                     Bukkit.getLogger().warning("Trying to auto-configure Maxlocation for arena " + arenaName);
-                    List<Location> minMaxLocationsFromSchematic = WEHook.getMinMaxLocationsFromSchematic(schematicFilePath);
+                    List<Location> minMaxLocationsFromSchematic = WEHook.getMinMaxLocationsFromSchematic(schematicFilePath,world);
                     if (minMaxLocationsFromSchematic.size() != 2) {
                         Bukkit.getLogger().severe("Schematic not found for arena " + arenaName);
                         Bukkit.getLogger().severe("This arena won't be loaded");
@@ -130,9 +130,15 @@ public class ArenaUtils {
                     } else {
                         if (maxLocationString == null) {
                             maxLocation = minMaxLocationsFromSchematic.get(1);
+                            if (minLocationString != null) {
+                                minLocation = deserializeLocation(minLocationString);
+                            }
                         }
                         if (minLocationString == null) {
                             minLocation = minMaxLocationsFromSchematic.get(0);
+                            if (maxLocationString != null) {
+                                maxLocation = deserializeLocation(maxLocationString);
+                            }
                         }
                     }
                 }
