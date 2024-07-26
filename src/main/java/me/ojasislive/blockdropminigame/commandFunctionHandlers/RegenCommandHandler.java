@@ -22,7 +22,7 @@ public class RegenCommandHandler {
 
         if (ArenaUtils.getArenaByName(args[2]) == null) {
             sender.sendMessage(ChatColor.YELLOW+"["+ ChatColor.RED+ "❌"+ ChatColor.YELLOW+ "]"
-                    +ChatColor.GRAY+
+                    +ChatColor.GRAY+"[Blockdrop-Minigame] "+
                     "Caching Error Occurred!" +
                     " - No such Arena (or) Arena was not loaded correctly." +
                     " This might have happened because of manually changing arenas.yml");
@@ -35,7 +35,7 @@ public class RegenCommandHandler {
         if (!file.exists()) {
             sender.sendMessage(ChatColor.YELLOW+"["+ ChatColor.RED+ "❌"+ ChatColor.YELLOW+ "]"
                     +ChatColor.GRAY+
-                    "Schematic not found!");
+                    "[Blockdrop-Minigame] Schematic not found!");
 
             return 0;
         }
@@ -43,7 +43,7 @@ public class RegenCommandHandler {
         Location arenaMinLocation = Objects.requireNonNull(ArenaUtils.getArenaByName(args[2]),"Arena loading error!").getMinLocation();
         if (arenaMinLocation == null) {
             sender.sendMessage(ChatColor.YELLOW+"["+ ChatColor.RED+ "❌"+ ChatColor.YELLOW+ "]"
-                    +ChatColor.GRAY+
+                    +ChatColor.GRAY+"[Blockdrop-Minigame] "+
                     "Caching Error Occurred!" +
                     " - No schematic associated with arena or the schematic is corrupted.");
 
@@ -53,7 +53,7 @@ public class RegenCommandHandler {
         WEHook.paste(arenaMinLocation, file);
         sender.sendMessage(ChatColor.AQUA +"["+ ChatColor.GREEN+ "✔"+ ChatColor.AQUA + "]"
                 +ChatColor.GRAY+
-                " Schematic pasted at "
+                "[Blockdrop-Minigame] Schematic pasted at "
                 + (int) arenaMinLocation.getX() + ","
                 + (int) arenaMinLocation.getY() + ","
                 + (int) arenaMinLocation.getZ());

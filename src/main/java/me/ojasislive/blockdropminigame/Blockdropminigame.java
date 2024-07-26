@@ -3,6 +3,7 @@ package me.ojasislive.blockdropminigame;
 import me.ojasislive.blockdropminigame.arena.ArenaUtils;
 import me.ojasislive.blockdropminigame.commands.BlockDropCommandExecutor;
 import me.ojasislive.blockdropminigame.commands.BlockDropTabCompleter;
+import me.ojasislive.blockdropminigame.listeners.PlayerMovementListener;
 import me.ojasislive.blockdropminigame.listeners.PlayerQuitListener;
 import me.ojasislive.blockdropminigame.listeners.PlayerTeleportListener;
 import org.bukkit.Bukkit;
@@ -19,9 +20,17 @@ public final class Blockdropminigame extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
+        Bukkit.getLogger().info(ChatColor.BLUE + "----------------------------------------------------------");
+        Bukkit.getLogger().info(ChatColor.GOLD + "BlockDrop Minigame");
+        Bukkit.getLogger().info(ChatColor.AQUA + "Made with " + ChatColor.RED + "♥" + ChatColor.AQUA + " by OJASisLive aka Om J Shah");
+        Bukkit.getLogger().info(ChatColor.AQUA + "Please report any bug/crash to our Github Issue Tracker at");
+        Bukkit.getLogger().info(ChatColor.AQUA + "https://github.com/OJASisLive/Blockdrop-Minigame/issues");
+        Bukkit.getLogger().info(ChatColor.BLUE + "----------------------------------------------------------");
+
         // Register Listeners
         getServer().getPluginManager().registerEvents(new PlayerQuitListener(),this);
         getServer().getPluginManager().registerEvents(new PlayerTeleportListener(), this);
+        getServer().getPluginManager().registerEvents(new PlayerMovementListener(), this);
 
         ArenaUtils.init(getDataFolder());
 
@@ -29,7 +38,8 @@ public final class Blockdropminigame extends JavaPlugin {
         Objects.requireNonNull(getCommand("blockdrop"),"Unable to register command '/blockdrop'.").setExecutor(new BlockDropCommandExecutor());
         Objects.requireNonNull(getCommand("blockdrop"),"Unable to register tabcompleter for command '/blockdrop'").setTabCompleter(new BlockDropTabCompleter());
 
-        Bukkit.getLogger().info(ChatColor.GREEN + "[Blockdrop Minigame] Plugin Started!!");
+
+        Bukkit.getLogger().info(ChatColor.GOLD + "[Blockdrop Minigame] Plugin Started!!");
     }
 
     @Override

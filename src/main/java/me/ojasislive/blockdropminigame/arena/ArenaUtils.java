@@ -44,11 +44,16 @@ public class ArenaUtils {
     }
 
     public static boolean isInRegion(Location location, Arena arena){
+        return isInRegion(location,arena,0,0,0,0,0,0);
+    }
+
+    public static boolean isInRegion(Location location, Arena arena, int xMinOffset, int yMinOffset, int zMinOffset,
+                                     int xMaxOffset, int yMaxOffset, int zMaxOffset){
         Location minLocation = arena.getMinLocation();
         Location maxLocation = arena.getMaxLocation();
-        return minLocation.getX() <= location.getX() & location.getX() <= maxLocation.getX() &
-                minLocation.getY() <= location.getY() & location.getY() <= maxLocation.getY() &
-                minLocation.getZ() <= location.getZ() & location.getZ() <= maxLocation.getZ();
+        return minLocation.getX()+xMinOffset <= location.getX() & location.getX() <= maxLocation.getX()-xMaxOffset &
+                minLocation.getY()+yMinOffset <= location.getY() & location.getY() <= maxLocation.getY()-yMaxOffset &
+                minLocation.getZ()+zMinOffset <= location.getZ() & location.getZ() <= maxLocation.getZ()-zMaxOffset;
     }
 
     private static File arenasFile;
@@ -58,7 +63,7 @@ public class ArenaUtils {
         arenasFile = new File(dataFolder, "arenas.yml");
         if (!arenasFile.exists()) {
             try {
-                Bukkit.getLogger().warning("Arena file does not exist");
+                Bukkit.getLogger().warning("[Blockdrop-Minigame] Arena file does not exist");
                 //noinspection ResultOfMethodCallIgnored
                 arenasFile.createNewFile();
             } catch (IOException e) {
@@ -73,7 +78,7 @@ public class ArenaUtils {
     public static void saveArenas() {
         for (Arena arena : getArenas()) {
             if (arena.getArenaWorld() == null) {
-                Bukkit.getLogger().warning("Arena world is null for arena: " + arena.getArenaName());
+                Bukkit.getLogger().warning("[Blockdrop-Minigame] Arena world is null for arena: " + arena.getArenaName());
                 continue; // Skip saving this arena if world is null
             }
 
@@ -85,7 +90,7 @@ public class ArenaUtils {
             arenasConfig.set(path + ".schematicFilePath", arena.getSchematicFilePath()); // Save the schematic file path
             arenasConfig.set(path + ".maxplayers",arena.getMaxPlayersLimit());
             arenasConfig.set(path + ".active",arena.isActive());
-            Bukkit.getLogger().info("Saved Arena "+arena.getArenaName());
+            Bukkit.getLogger().info("[Blockdrop-Minigame] Saved Arena "+arena.getArenaName());
         }
         try {
             arenasConfig.save(arenasFile);
@@ -101,9 +106,9 @@ public class ArenaUtils {
             for (String arenaName : (arenasConfig.getConfigurationSection("arenas")).getKeys(false)) {
                 String path = "arenas." + arenaName;
                 World world = Bukkit.getWorld(Objects.requireNonNull(arenasConfig.getString(path + ".world"),
-                        "World not found for arena: " + arenaName));
+                        "[Blockdrop-Minigame] World not found for arena: " + arenaName));
                 if (world == null) {
-                    Bukkit.getLogger().warning("World not found for arena: " + arenaName);
+                    Bukkit.getLogger().warning("[Blockdrop-Minigame] World not found for arena: " + arenaName);
                     continue; // Skip loading this arena if world is not found
                 }
 
@@ -120,12 +125,12 @@ public class ArenaUtils {
                 Location maxLocation = null;
 
                 if (minLocationString == null | maxLocationString == null) {
-                    Bukkit.getLogger().warning("Minlocation/Maxlocation is not set for arena " + arenaName);
-                    Bukkit.getLogger().warning("Trying to auto-configure Maxlocation for arena " + arenaName);
+                    Bukkit.getLogger().warning("[Blockdrop-Minigame] Minlocation/Maxlocation is not set for arena " + arenaName);
+                    Bukkit.getLogger().warning("[Blockdrop-Minigame] Trying to auto-configure Maxlocation for arena " + arenaName);
                     List<Location> minMaxLocationsFromSchematic = WEHook.getMinMaxLocationsFromSchematic(schematicFilePath,world);
                     if (minMaxLocationsFromSchematic.size() != 2) {
-                        Bukkit.getLogger().severe("Schematic not found for arena " + arenaName);
-                        Bukkit.getLogger().severe("This arena won't be loaded");
+                        Bukkit.getLogger().severe("[Blockdrop-Minigame] Schematic not found for arena " + arenaName);
+                        Bukkit.getLogger().severe("[Blockdrop-Minigame] This arena won't be loaded");
                         continue;
                     } else {
                         if (maxLocationString == null) {
@@ -141,6 +146,9 @@ public class ArenaUtils {
                             }
                         }
                     }
+                }else{
+                    minLocation = deserializeLocation(minLocationString);
+                    maxLocation = deserializeLocation(maxLocationString);
                 }
                 Arena arena = Arena.createArena(arenaName, world, minLocation, maxLocation);
                 arena.setMaxPlayersLimit(maxplayers);
@@ -148,12 +156,16 @@ public class ArenaUtils {
                 arena.setSpawnLocations(spawnLocations);
                 arena.setActive(active);//fixed logical error
                 arena.setSchematicFilePath(schematicFilePath); // Set the schematic file path
+                if (schematicFilePath != null) {
+                    WEHook.paste(arena.getMinLocation(),new File(schematicFilePath));//regenerate arena on loading
+                    Bukkit.getLogger().info("[Blockdrop-Minigame] Regenerated arena "+arenaName);
+                }
             }
         }
     }
 
     private static String serializeLocation(Location location) {
-        return Objects.requireNonNull(location.getWorld(), "No world for location " + location).getName() + "," +
+        return Objects.requireNonNull(location.getWorld(), "[Blockdrop-Minigame] No world for location " + location).getName() + "," +
                 location.getX() + "," +
                 location.getY() + "," +
                 location.getZ() + "," +

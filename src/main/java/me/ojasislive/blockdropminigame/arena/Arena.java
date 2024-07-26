@@ -60,7 +60,7 @@ public class Arena {
     }
 
     public Location getMinLocation() {
-        return Objects.requireNonNull(this.minLocation,"The min location is null!");
+        return Objects.requireNonNull(this.minLocation,"[Blockdrop-Minigame] The min location is null!");
     }
 
     public World getArenaWorld() {
