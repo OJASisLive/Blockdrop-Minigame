@@ -1,9 +1,13 @@
 package me.ojasislive.blockdropminigame.game.task;
 
+import me.ojasislive.blockdropminigame.arena.Arena;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.UUID;
 
 public class Countdown {
 
@@ -18,19 +22,29 @@ public class Countdown {
         this.onStart = onStart;
     }
 
-    public void start() {
+    public void start(Arena arena) {
         task = new BukkitRunnable() {
             @Override
             public void run() {
                 if (time == 0) {
-                    Bukkit.broadcastMessage(ChatColor.GREEN + "The game is starting now!");
+                    for (String uuidString : arena.getPlayers()){
+                        Player player = Bukkit.getPlayer(UUID.fromString(uuidString));
+                        if (player != null) {
+                            player.sendMessage(ChatColor.GREEN + "The game is starting now!");
+                        }
+                    }
                     onStart.run();
                     cancel();
                     return;
                 }
 
                 if (time % 10 == 0 || time <= 5) {
-                    Bukkit.broadcastMessage(ChatColor.YELLOW + "The game starts in " + time + " seconds!");
+                    for (String uuidString : arena.getPlayers()){
+                        Player player = Bukkit.getPlayer(UUID.fromString(uuidString));
+                        if (player != null) {
+                            player.sendMessage(ChatColor.YELLOW + "The game starts in " + time + " seconds!");
+                        }
+                    }
                 }
 
                 time--;

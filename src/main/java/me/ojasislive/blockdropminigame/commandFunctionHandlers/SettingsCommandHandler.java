@@ -3,11 +3,18 @@ package me.ojasislive.blockdropminigame.commandFunctionHandlers;
 import me.ojasislive.blockdropminigame.arena.Arena;
 import me.ojasislive.blockdropminigame.arena.ArenaUtils;
 import me.ojasislive.blockdropminigame.game.ArenaState;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import java.util.UUID;
+
 public class SettingsCommandHandler {
+    private String value;
+
     public int handle(Player sender, String[] args) {
         if (args.length < 5) {
             sender.sendMessage(ChatColor.YELLOW + "[" + ChatColor.RED + "🛑" + ChatColor.YELLOW + "]"
@@ -52,7 +59,35 @@ public class SettingsCommandHandler {
     private void handleGet(Player sender, Arena arena, String setting) {
         switch (setting) {
             case "spawnlocations":
-                sender.sendMessage(ChatColor.GREEN + "Spawn Locations: " + arena.getSpawnLocations().toString());
+                sender.sendMessage(ChatColor.GREEN + "Spawn Locations: ");
+                int countLocation = 0;
+                TextComponent message = new TextComponent("[TP]");
+                message.setColor(net.md_5.bungee.api.ChatColor.UNDERLINE);
+                message.setColor(net.md_5.bungee.api.ChatColor.LIGHT_PURPLE);
+                for (Location location : arena.getSpawnLocations()){
+                    message.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,"/bt "
+                            + sender.getUniqueId() + " " +
+                            arena.getArenaWorld().toString() + " " +
+                            location.getX() + " " +
+                            location.getY() + " " +
+                            location.getZ() + " " +
+                            location.getYaw()+ " " +
+                            location.getPitch()));
+                    String locationString = arena.getArenaWorld().toString() + "," +
+                            ((int) location.getX()) + "," +
+                            ((int) location.getY()) + "," +
+                            ((int) location.getZ()) + ", "+message;
+                    sender.sendMessage(ChatColor.GOLD +""+ countLocation +": "+ ChatColor.GREEN +locationString);
+                    countLocation++;
+                }
+                break;
+            case "lobbylocation":
+                Location lobbyLocation = arena.getLobbyLocation();
+                sender.sendMessage(ChatColor.GREEN +
+                        "Lobby location is "
+                        + (int) lobbyLocation.getX() + ","
+                        + (int) lobbyLocation.getY() + ","
+                        + (int) lobbyLocation.getZ());
                 break;
             case "active":
                 sender.sendMessage(ChatColor.GREEN + "Active: " + arena.isActive());
@@ -61,7 +96,11 @@ public class SettingsCommandHandler {
                 sender.sendMessage(ChatColor.GREEN + "State: " + arena.getState().name());
                 break;
             case "players":
-                sender.sendMessage(ChatColor.GREEN + "Players: " + arena.getPlayers().toString());
+                int countPlayer = 0;
+                for (String uuidString : arena.getPlayers()){
+                    sender.sendMessage(ChatColor.GOLD +""+ countPlayer +": "+ Bukkit.getOfflinePlayer(UUID.fromString(uuidString)).getName());
+                    countPlayer++;
+                }
                 break;
             case "maxplayers":
                 sender.sendMessage(ChatColor.GREEN + "MaxPlayers: " + arena.getMaxPlayersLimit());
@@ -74,18 +113,24 @@ public class SettingsCommandHandler {
     }
 
     private void handleSet(Player sender, Arena arena, String setting, String[] args) {
-        if (args.length < 6) {
+
+        if (args.length < 6 & !setting.equalsIgnoreCase("lobbylocation")) {
             sender.sendMessage(ChatColor.YELLOW + "[" + ChatColor.RED + "🛑" + ChatColor.YELLOW + "]"
                     + ChatColor.GRAY + "Usage: /blockdrop arena settings <arenaname> set <active|state> <value>");
             return;
         }
+        if (!(args.length < 6)) {
+            value = args[5].toLowerCase();
+        }
 
-        String value = args[5].toLowerCase();
         switch (setting) {
             case "active":
-                if(arena.getState().equals(ArenaState.WAITING)) {
+                if(arena.getState().equals(ArenaState.WAITING) & arena.isActive()) {
                     boolean active = Boolean.parseBoolean(value);
                     arena.setActive(active);
+                    if (active != arena.isActive()){
+                        sender.sendMessage(ChatColor.RED+"Required amount ("+arena.getMaxPlayersLimit()+") of spawn locations are not defined");
+                    }
                     sender.sendMessage(ChatColor.GREEN + "Active set to: " + active);
                 }else {
                     sender.sendMessage(ChatColor.RED+"Cannot deactivate the arena because a game is going on in the arena");
@@ -111,6 +156,21 @@ public class SettingsCommandHandler {
                             + ChatColor.GRAY + "Invalid state value: " + value);
                 }
                 break;
+            case "lobbylocation":
+                Location lobbyLocation = sender.getTargetBlock(null, 5).getLocation();
+                if(!ArenaUtils.isInRegion(lobbyLocation,arena)){
+                    arena.setLobbyLocation(lobbyLocation);
+                    sender.sendMessage(ChatColor.AQUA +"["+ ChatColor.GREEN+ "✔"+ ChatColor.AQUA + "]"
+                            +ChatColor.GRAY+
+                            " Lobby location set to "
+                            + (int) lobbyLocation.getX() + ","
+                            + (int) lobbyLocation.getY() + ","
+                            + (int) lobbyLocation.getZ());
+                }else{
+                    sender.sendMessage(ChatColor.YELLOW + "[" + ChatColor.RED + "🛑" + ChatColor.YELLOW + "]"
+                            + ChatColor.GRAY + "Lobby location should be outside the arena bounds");
+                }
+                break;
             default:
                 sender.sendMessage(ChatColor.YELLOW + "[" + ChatColor.RED + "🛑" + ChatColor.YELLOW + "]"
                         + ChatColor.GRAY + "Invalid setting: " + setting);
@@ -132,9 +192,8 @@ public class SettingsCommandHandler {
                 sender.sendMessage(ChatColor.RED + "Maximum "+arena.getMaxPlayersLimit()+" spawn locations only!");
                 return;
             }else if(added==2){
-                sender.sendMessage(ChatColor.RED + "Location "+location+" is out of bounds of region");
-                sender.sendMessage(ChatColor.GRAY+"MinLocation: "+arena.getMinLocation());
-                sender.sendMessage(ChatColor.GRAY+"MaxLocation: "+arena.getMaxLocation());
+                sender.sendMessage(ChatColor.RED + "Your Location is out of bounds of region");
+                return;
             }
             sender.sendMessage(ChatColor.GREEN + "Added spawn location: " + location);
         } else {

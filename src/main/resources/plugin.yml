@@ -14,6 +14,11 @@ commands:
     aliases: [bd]
     permission: blockdropminigame.arena
 
+  bteleport:
+    description: Teleports the player to specified coordinates
+    usage: /bteleport <playerUUID> <world> <x> <y> <z> <yaw> <pitch>
+    aliases: [bt]
+
 permissions:
   blockdropminigame.admin:
     default: op

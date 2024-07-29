@@ -26,7 +26,7 @@ public class JoinLeaveHandler {
         if (arena == null){return ChatColor.RED+"No such arena: "+arenaName+" or arena does not exist";}
         if (!offlinePlayer.isOnline()){return ChatColor.RED+"Player: "+playerName+" is offline";}
         if (!arena.isActive()){return ChatColor.RED+"Arena: "+arenaName+" is not active";}
-        if (arena.getState()!=ArenaState.WAITING){return ChatColor.RED+"Arena: "+arenaName+" is in a game right now";}
+        if (arena.getState()!=ArenaState.WAITING | arena.getState()!=ArenaState.RESULTS){return ChatColor.RED+"Arena: "+arenaName+" is in a game right now";}
         if (!arena.getPlayers().contains(offlinePlayer.getUniqueId().toString())){return ChatColor.RED+"Player "+playerName+" is not already playing!";}
         arena.removePlayer(offlinePlayer.getUniqueId().toString());
 

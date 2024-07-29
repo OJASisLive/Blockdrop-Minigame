@@ -3,6 +3,7 @@ package me.ojasislive.blockdropminigame;
 import me.ojasislive.blockdropminigame.arena.ArenaUtils;
 import me.ojasislive.blockdropminigame.commands.BlockDropCommandExecutor;
 import me.ojasislive.blockdropminigame.commands.BlockDropTabCompleter;
+import me.ojasislive.blockdropminigame.commands.chatUtility.TeleportCommand;
 import me.ojasislive.blockdropminigame.listeners.PlayerMovementListener;
 import me.ojasislive.blockdropminigame.listeners.PlayerQuitListener;
 import me.ojasislive.blockdropminigame.listeners.PlayerTeleportListener;
@@ -35,6 +36,7 @@ public final class Blockdropminigame extends JavaPlugin {
         ArenaUtils.init(getDataFolder());
 
         // Register command executor and tab completer
+        Objects.requireNonNull(getCommand("bteleport"),"Unable to register command '/bteleport'.").setExecutor(new TeleportCommand());
         Objects.requireNonNull(getCommand("blockdrop"),"Unable to register command '/blockdrop'.").setExecutor(new BlockDropCommandExecutor());
         Objects.requireNonNull(getCommand("blockdrop"),"Unable to register tabcompleter for command '/blockdrop'").setTabCompleter(new BlockDropTabCompleter());
 

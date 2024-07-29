@@ -5,6 +5,7 @@ import me.ojasislive.blockdropminigame.game.ArenaState;
 import me.ojasislive.blockdropminigame.game.task.Countdown;
 import me.ojasislive.blockdropminigame.hooks.WEHook;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -54,6 +55,7 @@ public class ArenaUtils {
         return minLocation.getX()+xMinOffset <= location.getX() & location.getX() <= maxLocation.getX()-xMaxOffset &
                 minLocation.getY()+yMinOffset <= location.getY() & location.getY() <= maxLocation.getY()-yMaxOffset &
                 minLocation.getZ()+zMinOffset <= location.getZ() & location.getZ() <= maxLocation.getZ()-zMaxOffset;
+        //TODO:This method's logic needs to be fixed
     }
 
     private static File arenasFile;
@@ -86,11 +88,19 @@ public class ArenaUtils {
             arenasConfig.set(path + ".world", arena.getArenaWorld().getName());
             arenasConfig.set(path + ".minLocation", serializeLocation(arena.getMinLocation()));
             arenasConfig.set(path + ".maxLocation", serializeLocation(arena.getMaxLocation()));
+            if (arena.getLobbyLocation()==null){
+                arenasConfig.set(path + ".lobbyLocation", serializeLocation(arena.getMinLocation()));
+                Bukkit.getLogger().warning("[Blockdrop-Minigame] Set the lobby location temporarily the same as minlocation for arena " + arena.getArenaName());
+                Bukkit.getLogger().warning(ChatColor.RED+"[Blockdrop-Minigame] Active is set to false for " + arena.getArenaName());
+                Bukkit.getLogger().warning("[Blockdrop-Minigame] Please set a better lobby location for " + arena.getArenaName());
+            }else {
+                arenasConfig.set(path + ".lobbyLocation", serializeLocation(arena.getLobbyLocation()));
+            }
             arenasConfig.set(path + ".spawnLocations", serializeLocations(arena.getSpawnLocations()));
             arenasConfig.set(path + ".schematicFilePath", arena.getSchematicFilePath()); // Save the schematic file path
             arenasConfig.set(path + ".maxplayers",arena.getMaxPlayersLimit());
             arenasConfig.set(path + ".active",arena.isActive());
-            Bukkit.getLogger().info("[Blockdrop-Minigame] Saved Arena "+arena.getArenaName());
+            Bukkit.getLogger().info(ChatColor.AQUA+"[Blockdrop-Minigame] Saved Arena "+arena.getArenaName());
         }
         try {
             arenasConfig.save(arenasFile);
@@ -103,7 +113,7 @@ public class ArenaUtils {
     private static void loadArenas() {
         if (arenasConfig.contains("arenas") && arenasConfig.getConfigurationSection("arenas")!=null) {
 
-            for (String arenaName : (arenasConfig.getConfigurationSection("arenas")).getKeys(false)) {
+            for (String arenaName : (Objects.requireNonNull(arenasConfig.getConfigurationSection("arenas"))).getKeys(false)) {
                 String path = "arenas." + arenaName;
                 World world = Bukkit.getWorld(Objects.requireNonNull(arenasConfig.getString(path + ".world"),
                         "[Blockdrop-Minigame] World not found for arena: " + arenaName));
@@ -120,13 +130,14 @@ public class ArenaUtils {
 
                 String minLocationString = arenasConfig.getString(path + ".minLocation");
                 String maxLocationString = arenasConfig.getString(path + ".maxLocation");
+                String lobbyLocationString = arenasConfig.getString(path + ".lobbyLocation");
 
                 Location minLocation = null;
                 Location maxLocation = null;
+                Location lobbyLocation = null;
 
-                if (minLocationString == null | maxLocationString == null) {
-                    Bukkit.getLogger().warning("[Blockdrop-Minigame] Minlocation/Maxlocation is not set for arena " + arenaName);
-                    Bukkit.getLogger().warning("[Blockdrop-Minigame] Trying to auto-configure Maxlocation for arena " + arenaName);
+                if (minLocationString == null | maxLocationString == null | lobbyLocationString == null) {
+                    Bukkit.getLogger().warning("[Blockdrop-Minigame] Minlocation/Maxlocation/LobbyLocation is not set for arena " + arenaName);
                     List<Location> minMaxLocationsFromSchematic = WEHook.getMinMaxLocationsFromSchematic(schematicFilePath,world);
                     if (minMaxLocationsFromSchematic.size() != 2) {
                         Bukkit.getLogger().severe("[Blockdrop-Minigame] Schematic not found for arena " + arenaName);
@@ -134,31 +145,54 @@ public class ArenaUtils {
                         continue;
                     } else {
                         if (maxLocationString == null) {
+                            Bukkit.getLogger().warning("[Blockdrop-Minigame] Trying to auto-configure Maxlocation for arena " + arenaName);
                             maxLocation = minMaxLocationsFromSchematic.get(1);
                             if (minLocationString != null) {
                                 minLocation = deserializeLocation(minLocationString);
                             }
+                            if (lobbyLocationString != null) {
+                                lobbyLocation = deserializeLocation(lobbyLocationString);
+                            }
                         }
                         if (minLocationString == null) {
+                            Bukkit.getLogger().warning("[Blockdrop-Minigame] Trying to auto-configure Minlocation for arena " + arenaName);
                             minLocation = minMaxLocationsFromSchematic.get(0);
                             if (maxLocationString != null) {
                                 maxLocation = deserializeLocation(maxLocationString);
+                            }
+                            if (lobbyLocationString != null) {
+                                lobbyLocation = deserializeLocation(lobbyLocationString);
+                            }
+                        }
+                        if (lobbyLocationString == null) {
+                            Bukkit.getLogger().warning("[Blockdrop-Minigame] Set the lobby location temporarily the same as minlocation for arena " + arenaName);
+                            Bukkit.getLogger().warning(ChatColor.RED+"[Blockdrop-Minigame] Active is set to false for " + arenaName);
+                            Bukkit.getLogger().warning("[Blockdrop-Minigame] Please set a better lobby location for " + arenaName);
+                            lobbyLocation = minLocation;
+                            active = false;
+                            if (maxLocationString != null) {
+                                maxLocation = deserializeLocation(maxLocationString);
+                            }
+                            if (minLocationString != null) {
+                                minLocation = deserializeLocation(minLocationString);
                             }
                         }
                     }
                 }else{
                     minLocation = deserializeLocation(minLocationString);
                     maxLocation = deserializeLocation(maxLocationString);
+                    lobbyLocation = deserializeLocation(lobbyLocationString);
                 }
                 Arena arena = Arena.createArena(arenaName, world, minLocation, maxLocation);
                 arena.setMaxPlayersLimit(maxplayers);
+                arena.setLobbyLocation(lobbyLocation);
                 arena.setState(ArenaState.WAITING);
                 arena.setSpawnLocations(spawnLocations);
                 arena.setActive(active);//fixed logical error
                 arena.setSchematicFilePath(schematicFilePath); // Set the schematic file path
                 if (schematicFilePath != null) {
                     WEHook.paste(arena.getMinLocation(),new File(schematicFilePath));//regenerate arena on loading
-                    Bukkit.getLogger().info("[Blockdrop-Minigame] Regenerated arena "+arenaName);
+                    Bukkit.getLogger().info(ChatColor.AQUA+"[Blockdrop-Minigame] Regenerated arena "+arenaName);
                 }
             }
         }
@@ -235,7 +269,7 @@ public class ArenaUtils {
         if (!countdowns.containsKey(arenaName)) {
             Countdown countdown = new Countdown(plugin, time, onStart);
             countdowns.put(arenaName, countdown);
-            countdown.start();
+            countdown.start(ArenaUtils.getArenaByName(arenaName));
         }
     }
 

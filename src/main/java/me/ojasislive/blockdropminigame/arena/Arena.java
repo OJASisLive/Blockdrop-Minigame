@@ -34,10 +34,29 @@ public class Arena {
     private World arenaWorld;
     private List<Location> spawnLocations = new ArrayList<>();
     private final List<String> players = new ArrayList<>();
+    private final List<String> eliminatedPlayers = new ArrayList<>();
     private Location minLocation;
     private Location maxLocation;
+    private Location lobbyLocation;
     private int maxPlayersLimit;
     private String schematicFilePath; // Add this field to store the schematic file path
+
+    public Location getLobbyLocation() {
+        return lobbyLocation;
+    }
+
+    public void setLobbyLocation(Location lobbyLocation) {
+        this.lobbyLocation = lobbyLocation;
+    }
+
+    public List<String> getEliminatedPlayers() {
+        return eliminatedPlayers;
+    }
+
+    public void addEliminatedPlayers(String playerUUID){
+        this.eliminatedPlayers.add(playerUUID);
+    }
+
 
     public void setMaxLocation(Location maxLocation) {
         this.maxLocation = maxLocation;

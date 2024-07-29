@@ -2,6 +2,7 @@ package me.ojasislive.blockdropminigame.listeners;
 
 import me.ojasislive.blockdropminigame.arena.Arena;
 import me.ojasislive.blockdropminigame.arena.ArenaUtils;
+import me.ojasislive.blockdropminigame.game.GameStateHandler;
 import me.ojasislive.blockdropminigame.game.PlayerCache;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -20,6 +21,10 @@ public class PlayerQuitListener implements Listener {
             Arena arena = ArenaUtils.getArenaByName(arenaName);
             if (arena != null) {
                 arena.removePlayer(player.getUniqueId().toString());
+                arena.getEliminatedPlayers().remove(player.getUniqueId().toString());
+                if(arena.getPlayers().size()==0){
+                    GameStateHandler.getInstance().gameEnder(arena);
+                }
             }else {
                 Bukkit.getLogger().severe("Arena "+arenaName+" does not exist!");
                 Bukkit.getLogger().severe("Player "+player.getName()+" can not be removed from non existing Arena!");
