@@ -37,6 +37,20 @@ public class BlockMechanics {
             b.setType(Material.ORANGE_CONCRETE);
             Bukkit.getScheduler().runTaskLater(plugin, () -> b.setType(Material.RED_CONCRETE), 20L);
             Bukkit.getScheduler().runTaskLater(plugin, () -> b.setType(Material.AIR), 30L);
+            Bukkit.getScheduler().runTaskLater(plugin, () -> blocks.remove(b),31L);
+        }, 20L);
+    }
+    public void blockChange(Player player, Block b, Plugin plugin){
+        if (blocks.contains(b)) return;
+        if(b.getType()== Material.AIR) return;
+        player.playSound(player.getLocation(), Sound.BLOCK_STONE_PLACE,1f,1f);
+        blocks.add(b);
+        b.setType(Material.YELLOW_CONCRETE);
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            b.setType(Material.ORANGE_CONCRETE);
+            Bukkit.getScheduler().runTaskLater(plugin, () -> b.setType(Material.RED_CONCRETE), 20L);
+            Bukkit.getScheduler().runTaskLater(plugin, () -> b.setType(Material.AIR), 30L);
+            Bukkit.getScheduler().runTaskLater(plugin, () -> blocks.remove(b),31L);
         }, 20L);
     }
 
