@@ -69,7 +69,7 @@ public class GameStateHandler {
     }
 
     public void gameStarter(Arena arena){
-        if(arena.getPlayers().size()>=arena.getMaxPlayersLimit()){
+        if(arena.getPlayers().size()>=arena.getMinPlayersLimit()){
             ArenaUtils.getInstance().startCountdown(arena.getArenaName(), 10, () -> startGameRunnable(arena));
         }else{
             ArenaUtils.getInstance().cancelCountdown(arena.getArenaName());

@@ -99,6 +99,7 @@ public class ArenaUtils {
             arenasConfig.set(path + ".spawnLocations", serializeLocations(arena.getSpawnLocations()));
             arenasConfig.set(path + ".schematicFilePath", arena.getSchematicFilePath()); // Save the schematic file path
             arenasConfig.set(path + ".maxplayers",arena.getMaxPlayersLimit());
+            arenasConfig.set(path + ".minplayers",arena.getMinPlayersLimit());
             arenasConfig.set(path + ".active",arena.isActive());
             Bukkit.getLogger().info(ChatColor.AQUA+"[Blockdrop-Minigame] Saved Arena "+arena.getArenaName());
         }
@@ -123,6 +124,7 @@ public class ArenaUtils {
                 }
 
                 int maxplayers = arenasConfig.getInt(path + ".maxplayers");
+                int minplayers = arenasConfig.getInt(path + ".minplayers",maxplayers);
                 boolean active = Boolean.parseBoolean(arenasConfig.getString(path + ".active"));
 
                 List<Location> spawnLocations = deserializeLocations(arenasConfig.getStringList(path + ".spawnLocations"));
@@ -185,6 +187,7 @@ public class ArenaUtils {
                 }
                 Arena arena = Arena.createArena(arenaName, world, minLocation, maxLocation);
                 arena.setMaxPlayersLimit(maxplayers);
+                arena.setMinPlayersLimit(minplayers);
                 arena.setLobbyLocation(lobbyLocation);
                 arena.setState(ArenaState.WAITING);
                 arena.setSpawnLocations(spawnLocations);

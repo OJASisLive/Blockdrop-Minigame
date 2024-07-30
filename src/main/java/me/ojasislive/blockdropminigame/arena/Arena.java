@@ -38,8 +38,17 @@ public class Arena {
     private Location minLocation;
     private Location maxLocation;
     private Location lobbyLocation;
+    private int minPlayersLimit;
     private int maxPlayersLimit;
     private String schematicFilePath; // Add this field to store the schematic file path
+
+    public int getMinPlayersLimit() {
+        return minPlayersLimit;
+    }
+
+    public void setMinPlayersLimit(int minPlayersLimit) {
+        this.minPlayersLimit = minPlayersLimit;
+    }
 
     public Location getLobbyLocation() {
         return lobbyLocation;

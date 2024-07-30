@@ -22,7 +22,9 @@ public class PlayerQuitListener implements Listener {
             if (arena != null) {
                 arena.removePlayer(player.getUniqueId().toString());
                 arena.getEliminatedPlayers().remove(player.getUniqueId().toString());
-                if(arena.getPlayers().size()==0){
+                if(arena.getPlayers().size()==1){
+                    arena.removePlayer(player.getUniqueId().toString());
+                    arena.addEliminatedPlayers(player.getUniqueId().toString());
                     GameStateHandler.getInstance().gameEnder(arena);
                 }
             }else {

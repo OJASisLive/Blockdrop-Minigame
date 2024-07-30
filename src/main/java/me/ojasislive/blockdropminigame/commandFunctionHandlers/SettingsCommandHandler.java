@@ -3,13 +3,16 @@ package me.ojasislive.blockdropminigame.commandFunctionHandlers;
 import me.ojasislive.blockdropminigame.arena.Arena;
 import me.ojasislive.blockdropminigame.arena.ArenaUtils;
 import me.ojasislive.blockdropminigame.game.ArenaState;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.TextComponent;
+import me.ojasislive.blockdropminigame.game.JoinLeaveHandler;
+import net.md_5.bungee.api.chat.*;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class SettingsCommandHandler {
@@ -61,23 +64,30 @@ public class SettingsCommandHandler {
             case "spawnlocations":
                 sender.sendMessage(ChatColor.GREEN + "Spawn Locations: ");
                 int countLocation = 0;
-                TextComponent message = new TextComponent("[TP]");
-                message.setColor(net.md_5.bungee.api.ChatColor.UNDERLINE);
-                message.setColor(net.md_5.bungee.api.ChatColor.LIGHT_PURPLE);
-                for (Location location : arena.getSpawnLocations()){
-                    message.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,"/bt "
+                for (Location location : arena.getSpawnLocations()) {
+                    TextComponent message = new TextComponent("[TP]");
+                    message.setColor(net.md_5.bungee.api.ChatColor.UNDERLINE);
+                    message.setColor(net.md_5.bungee.api.ChatColor.LIGHT_PURPLE);
+                    message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("Click to teleport to the location")));
+                    message.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/bt "
                             + sender.getUniqueId() + " " +
-                            arena.getArenaWorld().toString() + " " +
+                            arena.getArenaWorld().getName() + " " +
                             location.getX() + " " +
                             location.getY() + " " +
                             location.getZ() + " " +
-                            location.getYaw()+ " " +
+                            location.getYaw() + " " +
                             location.getPitch()));
-                    String locationString = arena.getArenaWorld().toString() + "," +
+
+                    String locationString = arena.getArenaWorld().getName() + "," +
                             ((int) location.getX()) + "," +
                             ((int) location.getY()) + "," +
-                            ((int) location.getZ()) + ", "+message;
-                    sender.sendMessage(ChatColor.GOLD +""+ countLocation +": "+ ChatColor.GREEN +locationString);
+                            ((int) location.getZ()) + ", ";
+
+                    BaseComponent[] combinedMessage = new ComponentBuilder(ChatColor.GOLD + "" + countLocation + ": " + ChatColor.GREEN + locationString)
+                            .append(message)
+                            .create();
+
+                    sender.spigot().sendMessage(combinedMessage);
                     countLocation++;
                 }
                 break;
@@ -105,6 +115,9 @@ public class SettingsCommandHandler {
             case "maxplayers":
                 sender.sendMessage(ChatColor.GREEN + "MaxPlayers: " + arena.getMaxPlayersLimit());
                 break;
+            case "minplayers":
+                sender.sendMessage(ChatColor.GREEN + "MinPlayers: " + arena.getMinPlayersLimit());
+                break;
             default:
                 sender.sendMessage(ChatColor.YELLOW + "[" + ChatColor.RED + "🛑" + ChatColor.YELLOW + "]"
                         + ChatColor.GRAY + "Invalid setting: " + setting);
@@ -125,14 +138,26 @@ public class SettingsCommandHandler {
 
         switch (setting) {
             case "active":
-                if(arena.getState().equals(ArenaState.WAITING) & arena.isActive()) {
+                if(arena.getState().equals(ArenaState.WAITING)) {
                     boolean active = Boolean.parseBoolean(value);
-                    arena.setActive(active);
-                    if (active != arena.isActive()){
-                        sender.sendMessage(ChatColor.RED+"Required amount ("+arena.getMaxPlayersLimit()+") of spawn locations are not defined");
+                    if (arena.isActive()) {
+                        List<String> playerUUIDsCopy = new ArrayList<>(arena.getPlayers());//To avoid ConcurrentModificationException
+                        for (String playerUUID : playerUUIDsCopy) {
+                            JoinLeaveHandler.leaveArena(arena.getArenaName(), Bukkit.getOfflinePlayer(UUID.fromString(playerUUID)).getName());
+                        }
+                        arena.setActive(active);
+                        if (active != arena.isActive()) {
+                            sender.sendMessage(ChatColor.RED + "An error occured, try restarting the server");
+                        }
+                        sender.sendMessage(ChatColor.GREEN + "Active set to: " + active);
+                    }else {
+                        arena.setActive(active);
+                        if (active != arena.isActive()) {
+                            sender.sendMessage(ChatColor.RED + "Required amount (" + arena.getMaxPlayersLimit() + ") of spawn locations are not defined");
+                        }
+                        sender.sendMessage(ChatColor.GREEN + "Active set to: " + active);
                     }
-                    sender.sendMessage(ChatColor.GREEN + "Active set to: " + active);
-                }else {
+                }else if(arena.isActive()){
                     sender.sendMessage(ChatColor.RED+"Cannot deactivate the arena because a game is going on in the arena");
                 }
                 break;
@@ -146,6 +171,22 @@ public class SettingsCommandHandler {
                 sender.sendMessage(ChatColor.GREEN+"Maxplayers set to: "+maxplayers);
                 sender.sendMessage(ChatColor.RED + "(Reminder) Active is set to: false. You need to reactivate the arena");
                 break;
+            case "minplayers":
+                if(arena.isActive()){
+                    sender.sendMessage(ChatColor.RED + "(Error!) Active is set to: true. You need to deactivate the arena");
+                    break;
+                }
+                int minplayers = Integer.parseInt(value);
+                if (minplayers > arena.getMaxPlayersLimit()){
+                    sender.sendMessage(ChatColor.RED + "(Error!) Given value of Minplayers ("+minplayers+") " +
+                            "cannot be greater than maxplayers ("+arena.getMinPlayersLimit()+")");
+                    break;
+                }
+                arena.setMinPlayersLimit(minplayers);
+                sender.sendMessage(ChatColor.GREEN+"Minplayers set to: "+minplayers);
+                sender.sendMessage(ChatColor.RED + "(Reminder) Active is set to: false. You need to reactivate the arena");
+                break;
+
             case "state":
                 try {
                     ArenaState state = ArenaState.valueOf(value.toUpperCase());
@@ -195,7 +236,12 @@ public class SettingsCommandHandler {
                 sender.sendMessage(ChatColor.RED + "Your Location is out of bounds of region");
                 return;
             }
-            sender.sendMessage(ChatColor.GREEN + "Added spawn location: " + location);
+            sender.sendMessage(ChatColor.AQUA +"["+ ChatColor.GREEN+ "✔"+ ChatColor.AQUA + "]"
+                    +ChatColor.GRAY+
+                    " Spawn location set to "
+                    + (int) location.getX() + ","
+                    + (int) location.getY() + ","
+                    + (int) location.getZ() + " with index: "+arena.getSpawnLocations().indexOf(location));
         } else {
             sender.sendMessage(ChatColor.YELLOW + "[" + ChatColor.RED + "🛑" + ChatColor.YELLOW + "]"
                     + ChatColor.GRAY + "Invalid setting: " + setting);
