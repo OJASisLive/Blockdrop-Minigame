@@ -3,6 +3,7 @@ package me.ojasislive.blockdropminigame.game.task;
 import me.ojasislive.blockdropminigame.arena.Arena;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -43,6 +44,7 @@ public class Countdown {
                         Player player = Bukkit.getPlayer(UUID.fromString(uuidString));
                         if (player != null) {
                             player.sendMessage(ChatColor.YELLOW + "The game starts in " + time + " seconds!");
+                            player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL,1f,1f);
                         }
                     }
                 }

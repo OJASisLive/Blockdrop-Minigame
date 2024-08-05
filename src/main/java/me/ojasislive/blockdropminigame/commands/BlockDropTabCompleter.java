@@ -1,14 +1,17 @@
 package me.ojasislive.blockdropminigame.commands;
 
 import me.ojasislive.blockdropminigame.arena.ArenaUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class BlockDropTabCompleter implements TabCompleter {
     @SuppressWarnings("NullableProblems")
@@ -25,6 +28,12 @@ public class BlockDropTabCompleter implements TabCompleter {
 
         if (args.length == 2 && Arrays.asList("join","leave").contains(args[0].toLowerCase())) {
             return ArenaUtils.getArenaNamesAsList();
+        }
+
+        if (args.length == 3 && Arrays.asList("join","leave").contains(args[0])) {
+            return Bukkit.getOnlinePlayers().stream()
+                    .map(Player::getName)
+                    .collect(Collectors.toList());
         }
 
         if (args.length == 3 && Arrays.asList("save", "regen", "delete", "settings").contains(args[1])) {

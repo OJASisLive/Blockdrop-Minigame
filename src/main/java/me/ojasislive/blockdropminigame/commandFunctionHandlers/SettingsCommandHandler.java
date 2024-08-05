@@ -198,7 +198,7 @@ public class SettingsCommandHandler {
                 }
                 break;
             case "lobbylocation":
-                Location lobbyLocation = sender.getTargetBlock(null, 5).getLocation();
+                Location lobbyLocation = sender.getLocation().add(0,.2,0);
                 if(!ArenaUtils.isInRegion(lobbyLocation,arena)){
                     arena.setLobbyLocation(lobbyLocation);
                     sender.sendMessage(ChatColor.AQUA +"["+ ChatColor.GREEN+ "✔"+ ChatColor.AQUA + "]"

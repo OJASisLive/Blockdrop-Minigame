@@ -7,10 +7,7 @@ import me.ojasislive.blockdropminigame.game.ArenaState;
 import me.ojasislive.blockdropminigame.game.GameStateHandler;
 import me.ojasislive.blockdropminigame.game.PlayerCache;
 import me.ojasislive.blockdropminigame.game.mechanics.BlockMechanics;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,6 +18,7 @@ import org.bukkit.util.Vector;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 public class PlayerMovementListener implements Listener {
 
@@ -74,7 +72,15 @@ public class PlayerMovementListener implements Listener {
                         player.sendMessage(ChatColor.RED + "You're out!");
                         arena.addEliminatedPlayers(player.getUniqueId().toString());
                         arena.getPlayers().remove(player.getUniqueId().toString());
-                        if (arena.getPlayers().size() == 0) {
+                        if (arena.getPlayers().size() == 1) {
+                            String winnerUUIDstring=arena.getPlayers().get(0);
+                            Player winner = Bukkit.getPlayer(UUID.fromString(winnerUUIDstring));
+                            if (winner != null) {
+                                winner.playSound(arena.getLobbyLocation(), Sound.ENTITY_PLAYER_LEVELUP,1f,1f);
+                            }
+                            PlayerCache.removeJoinedPlayers(winnerUUIDstring);
+                            arena.addEliminatedPlayers(winnerUUIDstring);
+                            arena.getPlayers().remove(winnerUUIDstring);
                             GameStateHandler.getInstance().gameEnder(arena);
                         }
 

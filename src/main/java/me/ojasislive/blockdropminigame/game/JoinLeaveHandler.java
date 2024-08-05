@@ -17,7 +17,7 @@ public class JoinLeaveHandler {
         if (arena.getPlayers().contains(offlinePlayer.getUniqueId().toString())){return ChatColor.RED+"Player "+playerName+" is already playing!";}
         arena.addPlayer(offlinePlayer.getUniqueId().toString());
 
-        return ChatColor.GREEN +"Added player: "+playerName+" to the arena: "+arenaName+" susscesfully.";
+        return ChatColor.GREEN +"Added player: "+playerName+" to the arena: "+arenaName+" successfully.";
     }
 
     public static String leaveArena(String arenaName, String playerName){
@@ -30,6 +30,6 @@ public class JoinLeaveHandler {
         if (!arena.getPlayers().contains(offlinePlayer.getUniqueId().toString())){return ChatColor.RED+"Player "+playerName+" is not already playing!";}
         arena.removePlayer(offlinePlayer.getUniqueId().toString());
 
-        return ChatColor.GREEN +"Removed player: "+playerName+" from the arena: "+arenaName+" susscesfully.";
+        return ChatColor.GREEN +"Removed player: "+playerName+" from the arena: "+arenaName+" successfully.";
     }
 }
