@@ -24,7 +24,7 @@ public class PlayerQuitListener implements Listener {
             String arenaName = PlayerCache.getJoinedPlayers().get(player.getUniqueId().toString());
             Arena arena = ArenaUtils.getArenaByName(arenaName);
             if (arena != null) {
-                arena.removePlayer(player.getUniqueId().toString());
+                arena.removePlayer(player);
                 arena.getEliminatedPlayers().remove(player.getUniqueId().toString());
                 if(arena.getPlayers().size()==1 && arena.getState().equals(ArenaState.RUNNING)){
                     String winnerUUIDstring=arena.getPlayers().get(0);

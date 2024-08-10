@@ -1,5 +1,6 @@
 package me.ojasislive.blockdropminigame;
 
+import me.ojasislive.blockdropminigame.arena.Arena;
 import me.ojasislive.blockdropminigame.arena.ArenaUtils;
 import me.ojasislive.blockdropminigame.commands.BlockDropCommandExecutor;
 import me.ojasislive.blockdropminigame.commands.BlockDropTabCompleter;
@@ -9,9 +10,11 @@ import me.ojasislive.blockdropminigame.listeners.PlayerQuitListener;
 import me.ojasislive.blockdropminigame.listeners.PlayerTeleportListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public final class Blockdropminigame extends JavaPlugin {
 
@@ -46,6 +49,16 @@ public final class Blockdropminigame extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        for (Arena arena: ArenaUtils.getArenas()){
+            if (arena.isActive()){
+                for (String playerUUIDString: arena.getPlayers()){
+                    Player player = Bukkit.getPlayer(UUID.fromString(playerUUIDString));
+                    if (player != null) {
+                        arena.removePlayer(player);
+                    }
+                }
+            }
+        }
         ArenaUtils.saveArenas();
         Bukkit.getLogger().info(ChatColor.RED + "[Blockdrop Minigame] Plugin Stopped!!");
     }

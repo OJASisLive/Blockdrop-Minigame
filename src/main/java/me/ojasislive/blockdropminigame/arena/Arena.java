@@ -3,10 +3,12 @@ package me.ojasislive.blockdropminigame.arena;
 import me.ojasislive.blockdropminigame.game.ArenaState;
 import me.ojasislive.blockdropminigame.game.GameStateHandler;
 import me.ojasislive.blockdropminigame.game.PlayerCache;
+import me.ojasislive.blockdropminigame.game.inventory.InventoryManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -166,10 +168,14 @@ public class Arena {
         return this.playerNames;
     }
 
-    public void addPlayer(String playerUUID) {
+    private static final InventoryManager inventoryManager = new InventoryManager();
+    public void addPlayer(Player player) {
+        String playerUUID = player.getUniqueId().toString();
         if(PlayerCache.addJoinedPlyers(playerUUID, this.arenaName)){
             if(this.players.size()<this.spawnLocations.size()) {
                 this.players.add(playerUUID);
+                inventoryManager.saveInventory(player);
+                inventoryManager.setupGameInventory(player);
                 GameStateHandler gameStateHandler = GameStateHandler.getInstance();
                 gameStateHandler.gameStarter(this);
             }else{
@@ -179,13 +185,16 @@ public class Arena {
 
     }
 
-    public void removePlayer(String playerUUID) {
+    public void removePlayer(Player player) {
+        String playerUUID = player.getUniqueId().toString();
         if(PlayerCache.removeJoinedPlayers(playerUUID)) {
             this.players.remove(playerUUID);
             GameStateHandler gameStateHandler = GameStateHandler.getInstance();
             gameStateHandler.gameStarter(this);
+            inventoryManager.restoreInventory(player);
         }
     }
+
 
     // Add getter and setter for schematic file path
     public String getSchematicFilePath() {
