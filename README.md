@@ -143,7 +143,7 @@ After a player loses the game, you need to set a lobby location where they will 
 1. **Set Lobby Location:**
    - Go to your designated lobby area and stand in the location where you want the players to spawn.
    - Use the command `/blockdrop arena settings <arena_name> set lobbylocation`.
-   - This will set the lobby location where players will spawn after losing the game.
+   - This will set the lobby location where players will spawn after being eliminated.
 
 ## Step 8: Activate the Arena
 
