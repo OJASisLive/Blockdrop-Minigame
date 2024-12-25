@@ -44,6 +44,21 @@ When the game starts, the blocks under the players feet start disappearing, the 
 - `blockdropminigame.admin`: Allows access to all admin commands. Default: OP
 
 # Setting up the Plugin
+## Installation Instructions:
+
+### Download the Snapshot Plugin:
+- Download the latest snapshot version of Blockdrop Minigame.
+
+### Install Dependencies:
+- Ensure you have WorldEdit version **7.2.16+** installed on your server as it's a dependency for this plugin.
+
+### Place the Plugin:
+- Place the downloaded Blockdrop Minigame snapshot `.jar` file into your server's `plugins` directory.
+
+### Restart the Server:
+- Restart your Minecraft server to load the plugin.
+
+# In-Game Setup
 Follow 8 simple steps to set up the game. I have not edited the tutorial video and the language used is Hindi, watch it only if you do not understsand the following 8 steps
 https://drive.google.com/file/d/1LU8NnmtywG8nJf0MALQL7Hl2Aah-5J9s/preview
 
