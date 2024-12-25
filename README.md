@@ -2,6 +2,35 @@
 
 Blockdrop Minigame is a Minecraft plugin that enables players to participate in exciting block drop minigames within predefined arena regions. This plugin is designed to manage arena creation, save and load schematics, handle player commands, and start games with countdown timers.
 
+## About: 
+This minigame is the remake of the [Fall Guys](https://www.fallguys.com/) / [Stumble Guys](https://www.stumbleguys.com/) / 
+Blockdrop minigame from [TheHiveMC](https://playhive.com/)
+
+<details>
+<summary>Spoiler Fallguys</summary>
+
+![Blockdrop Minigame in Fall Guys](https://github.com/OJASisLive/Blockdrop-Minigame/blob/master/pictures/Fall_guys.png)
+
+</details>
+
+<details>
+<summary>Spoiler Stumble Guys</summary>
+
+![Blockdrop Minigame in Stumble Guys](https://github.com/OJASisLive/Blockdrop-Minigame/blob/master/pictures/Stumble_guys_honeydrop.png)
+
+</details>
+
+<details>
+
+<summary>Spoiler HIVE</summary>
+
+![Blockdrop Minigame in HIVE mc](https://github.com/OJASisLive/Blockdrop-Minigame/blob/master/pictures/Blockdrop_hive.png)
+
+</details> 
+
+## How does this game work?
+When the game starts, the blocks under the players feet start disappearing, the players' goal is to stay inside the arena and try to be the last player standing to win the game.
+
 ## Features
 
 - **Arena Management**: Create, save, and manage multiple arenas.
