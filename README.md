@@ -79,7 +79,7 @@ Once the arena is created, set two temporary blocks to define the boundaries of 
 ### For clarity, refer to the images 
 
 ### Upper Bound (one level above highest) ![lowerbound](https://github.com/OJASisLive/Blockdrop-Minigame/blob/master/pictures/Upperbound.png)
-### Lower Bound (onle level below lowest) ![lowerbound](https://github.com/OJASisLive/Blockdrop-Minigame/blob/master/pictures/lowerbound.png)
+### Lower Bound (one level below lowest) ![lowerbound](https://github.com/OJASisLive/Blockdrop-Minigame/blob/master/pictures/lowerbound.png)
 
 ## Step 3: Set Positions with Commands
 After placing the temporary blocks:
