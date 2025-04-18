@@ -155,7 +155,7 @@ public class SettingsCommandHandler {
                         if (active != arena.isActive()) {
                             sender.sendMessage(ChatColor.RED + "Required amount (" + arena.getMaxPlayersLimit() + ") of spawn locations are not defined");
                         }
-                        sender.sendMessage(ChatColor.GREEN + "Active set to: " + active);
+                        //sender.sendMessage(ChatColor.GREEN + "Active set to: " + active);
                     }
                 }else if(arena.isActive()){
                     sender.sendMessage(ChatColor.RED+"Cannot deactivate the arena because a game is going on in the arena");

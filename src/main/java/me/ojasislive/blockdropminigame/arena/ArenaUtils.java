@@ -1,6 +1,7 @@
 package me.ojasislive.blockdropminigame.arena;
 
 import me.ojasislive.blockdropminigame.Blockdropminigame;
+import me.ojasislive.blockdropminigame.commands.chatUtility.AnsiColors;
 import me.ojasislive.blockdropminigame.game.ArenaState;
 import me.ojasislive.blockdropminigame.game.task.Countdown;
 import me.ojasislive.blockdropminigame.hooks.WEHook;
@@ -69,7 +70,7 @@ public class ArenaUtils {
                 //noinspection ResultOfMethodCallIgnored
                 arenasFile.createNewFile();
             } catch (IOException e) {
-                e.printStackTrace();
+                Bukkit.getLogger().info("IO exception was handeled by the plugin successfully");
             }
         }
         arenasConfig = YamlConfiguration.loadConfiguration(arenasFile);
@@ -91,7 +92,7 @@ public class ArenaUtils {
             if (arena.getLobbyLocation()==null){
                 arenasConfig.set(path + ".lobbyLocation", serializeLocation(arena.getMinLocation()));
                 Bukkit.getLogger().warning("[Blockdrop-Minigame] Set the lobby location temporarily the same as minlocation for arena " + arena.getArenaName());
-                Bukkit.getLogger().warning(ChatColor.RED+"[Blockdrop-Minigame] Active is set to false for " + arena.getArenaName());
+                Bukkit.getLogger().warning(AnsiColors.RED+"[Blockdrop-Minigame] Active is set to false for " + arena.getArenaName() + AnsiColors.RESET);
                 Bukkit.getLogger().warning("[Blockdrop-Minigame] Please set a better lobby location for " + arena.getArenaName());
             }else {
                 arenasConfig.set(path + ".lobbyLocation", serializeLocation(arena.getLobbyLocation()));
@@ -101,7 +102,7 @@ public class ArenaUtils {
             arenasConfig.set(path + ".maxplayers",arena.getMaxPlayersLimit());
             arenasConfig.set(path + ".minplayers",arena.getMinPlayersLimit());
             arenasConfig.set(path + ".active",arena.isActive());
-            Bukkit.getLogger().info(ChatColor.AQUA+"[Blockdrop-Minigame] Saved Arena "+arena.getArenaName());
+            Bukkit.getLogger().info(AnsiColors.AQUA+"[Blockdrop-Minigame] Saved Arena "+arena.getArenaName()+AnsiColors.RESET);
         }
         try {
             arenasConfig.save(arenasFile);

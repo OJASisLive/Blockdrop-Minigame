@@ -46,8 +46,6 @@ public class InventoryManager {
         player.getInventory().clear();
         player.getInventory().setArmorContents(null);
 
-        // Example: Give the player a sword and some food
-        player.getInventory().addItem(new ItemStack(Material.DIAMOND_SWORD));
         player.getInventory().addItem(new ItemStack(Material.COOKED_BEEF, 16));
     }
 
