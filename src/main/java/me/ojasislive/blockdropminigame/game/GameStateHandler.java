@@ -33,7 +33,7 @@ public class GameStateHandler {
         arena.setState(ArenaState.STARTING);
         for (int i = 0; i < arena.getPlayers().size(); i++) {
             if (i < arena.getSpawnLocations().size()) {
-                UUID uuid = UUID.fromString(arena.getPlayers().get(i));
+                UUID uuid = arena.getPlayers().get(i);
                 Player player = Bukkit.getPlayer(uuid);
                 Location location = arena.getSpawnLocations().get(i);
 
@@ -48,8 +48,8 @@ public class GameStateHandler {
             }
         }
         arena.setState(ArenaState.RUNNING);
-        for (String playerUUIDString : arena.getPlayers()){
-            Player player = Bukkit.getPlayer(UUID.fromString(playerUUIDString));
+        for (UUID playerUUID : arena.getPlayers()){
+            Player player = Bukkit.getPlayer(playerUUID);
             if (player != null) {
                 BlockMechanics.getInstance().blockChange(player,player.getLocation(),plugin);
             }
@@ -58,7 +58,7 @@ public class GameStateHandler {
         // Clear metadata after a short delay
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             for (int i = 0; i < arena.getPlayers().size(); i++) {
-                UUID uuid = UUID.fromString(arena.getPlayers().get(i));
+                UUID uuid = arena.getPlayers().get(i);
                 Player player = Bukkit.getPlayer(uuid);
                 if (player != null) {
                     player.removeMetadata("gameTeleport", plugin);
@@ -82,8 +82,8 @@ public class GameStateHandler {
         int rank = 1;
 
         while (i >= 0) {
-            String uuidString = arena.getEliminatedPlayers().get(i);
-            Player player = Bukkit.getPlayer(UUID.fromString(uuidString));
+            UUID uuid = arena.getEliminatedPlayers().get(i);
+            Player player = Bukkit.getPlayer(uuid);
 
             if (player == null) {
                 rank++;
@@ -110,7 +110,7 @@ public class GameStateHandler {
             }
 
             player.teleport(arena.getLobbyLocation());
-            arena.getEliminatedPlayers().remove(uuidString);
+            arena.getEliminatedPlayers().remove(uuid);
             JoinLeaveHandler.leaveArena(arena.getArenaName(),player.getName());
             rank++;
             i--;

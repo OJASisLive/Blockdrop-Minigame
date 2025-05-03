@@ -65,18 +65,7 @@ public class SettingsCommandHandler {
                 sender.sendMessage(ChatColor.GREEN + "Spawn Locations: ");
                 int countLocation = 0;
                 for (Location location : arena.getSpawnLocations()) {
-                    TextComponent message = new TextComponent("[TP]");
-                    message.setColor(net.md_5.bungee.api.ChatColor.UNDERLINE);
-                    message.setColor(net.md_5.bungee.api.ChatColor.LIGHT_PURPLE);
-                    message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("Click to teleport to the location")));
-                    message.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/bt "
-                            + sender.getUniqueId() + " " +
-                            arena.getArenaWorld().getName() + " " +
-                            location.getX() + " " +
-                            location.getY() + " " +
-                            location.getZ() + " " +
-                            location.getYaw() + " " +
-                            location.getPitch()));
+                    TextComponent message = getTextComponent(sender, arena, location);
 
                     String locationString = arena.getArenaWorld().getName() + "," +
                             ((int) location.getX()) + "," +
@@ -107,8 +96,8 @@ public class SettingsCommandHandler {
                 break;
             case "players":
                 int countPlayer = 0;
-                for (String uuidString : arena.getPlayers()){
-                    sender.sendMessage(ChatColor.GOLD +""+ countPlayer +": "+ Bukkit.getOfflinePlayer(UUID.fromString(uuidString)).getName());
+                for (UUID uuid : arena.getPlayers()){
+                    sender.sendMessage(ChatColor.GOLD +""+ countPlayer +": "+ Bukkit.getOfflinePlayer(uuid).getName());
                     countPlayer++;
                 }
                 break;
@@ -123,6 +112,22 @@ public class SettingsCommandHandler {
                         + ChatColor.GRAY + "Invalid setting: " + setting);
                 break;
         }
+    }
+
+    private static TextComponent getTextComponent(Player sender, Arena arena, Location location) {
+        TextComponent message = new TextComponent("[TP]");
+        message.setColor(net.md_5.bungee.api.ChatColor.UNDERLINE);
+        message.setColor(net.md_5.bungee.api.ChatColor.LIGHT_PURPLE);
+        message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("Click to teleport to the location")));
+        message.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/bt "
+                + sender.getUniqueId() + " " +
+                arena.getArenaWorld().getName() + " " +
+                location.getX() + " " +
+                location.getY() + " " +
+                location.getZ() + " " +
+                location.getYaw() + " " +
+                location.getPitch()));
+        return message;
     }
 
     private void handleSet(Player sender, Arena arena, String setting, String[] args) {
@@ -141,9 +146,9 @@ public class SettingsCommandHandler {
                 if(arena.getState().equals(ArenaState.WAITING)) {
                     boolean active = Boolean.parseBoolean(value);
                     if (arena.isActive()) {
-                        List<String> playerUUIDsCopy = new ArrayList<>(arena.getPlayers());//To avoid ConcurrentModificationException
-                        for (String playerUUID : playerUUIDsCopy) {
-                            JoinLeaveHandler.leaveArena(arena.getArenaName(), Bukkit.getOfflinePlayer(UUID.fromString(playerUUID)).getName());
+                        List<UUID> playerUUIDsCopy = new ArrayList<>(arena.getPlayers());//To avoid ConcurrentModificationException
+                        for (UUID playerUUID : playerUUIDsCopy) {
+                            JoinLeaveHandler.leaveArena(arena.getArenaName(), Bukkit.getOfflinePlayer(playerUUID).getName());
                         }
                         arena.setActive(active);
                         if (active != arena.isActive()) {

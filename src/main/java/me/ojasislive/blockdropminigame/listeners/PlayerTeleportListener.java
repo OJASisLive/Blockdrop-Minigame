@@ -14,12 +14,14 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 
 import org.bukkit.metadata.MetadataValue;
 
+import java.util.UUID;
+
 public class PlayerTeleportListener implements Listener {
 
     @EventHandler
     public void onPlayerTP(PlayerTeleportEvent event) {
         Player player = event.getPlayer();
-        String playerUUID = player.getUniqueId().toString();
+        UUID playerUUID = player.getUniqueId();
 
         // Check if the player has the gameTeleport metadata
         boolean isGameTeleport = false;

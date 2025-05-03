@@ -20,21 +20,21 @@ public class PlayerQuitListener implements Listener {
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent event){
         Player player = event.getPlayer();
-        if(PlayerCache.getJoinedPlayers().containsKey(player.getUniqueId().toString())){
-            String arenaName = PlayerCache.getJoinedPlayers().get(player.getUniqueId().toString());
+        if(PlayerCache.getJoinedPlayers().containsKey(player.getUniqueId())){
+            String arenaName = PlayerCache.getJoinedPlayers().get(player.getUniqueId());
             Arena arena = ArenaUtils.getArenaByName(arenaName);
             if (arena != null) {
                 arena.removePlayer(player);
-                arena.getEliminatedPlayers().remove(player.getUniqueId().toString());
+                arena.getEliminatedPlayers().remove(player.getUniqueId());
                 if(arena.getPlayers().size()==1 && arena.getState().equals(ArenaState.RUNNING)){
-                    String winnerUUIDstring=arena.getPlayers().get(0);
-                    Player winner = Bukkit.getPlayer(UUID.fromString(winnerUUIDstring));
+                    UUID winnerUUID=arena.getPlayers().get(0);
+                    Player winner = Bukkit.getPlayer(winnerUUID);
                     if (winner != null) {
                         winner.playSound(arena.getLobbyLocation(), Sound.ENTITY_PLAYER_LEVELUP,1f,1f);
                     }
-                    PlayerCache.removeJoinedPlayers(winnerUUIDstring);
-                    arena.addEliminatedPlayers(winnerUUIDstring);
-                    arena.getPlayers().remove(winnerUUIDstring);
+                    PlayerCache.removeJoinedPlayers(winnerUUID);
+                    arena.addEliminatedPlayers(winnerUUID);
+                    arena.getPlayers().remove(winnerUUID);
                     GameStateHandler.getInstance().gameEnder(arena);
                 }
             }else {

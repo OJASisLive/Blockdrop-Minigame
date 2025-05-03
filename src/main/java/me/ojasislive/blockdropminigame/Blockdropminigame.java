@@ -53,9 +53,9 @@ public final class Blockdropminigame extends JavaPlugin {
     public void onDisable() {
         for (Arena arena: ArenaUtils.getArenas()){
             if (arena.isActive()){
-                List<String> playerUUIDs = new ArrayList<>(arena.getPlayers());
-                for (String playerUUIDString: playerUUIDs){
-                    Player player = Bukkit.getPlayer(UUID.fromString(playerUUIDString));
+                List<UUID> playerUUIDs = new ArrayList<>(arena.getPlayers());
+                for (UUID playerUUID: playerUUIDs){
+                    Player player = Bukkit.getPlayer(playerUUID);
                     if (player != null) {
                         arena.removePlayer(player);
                         player.teleport(arena.getLobbyLocation());

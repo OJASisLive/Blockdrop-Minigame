@@ -59,8 +59,8 @@ public class PlayerMovementListener implements Listener {
         Location toLocation = event.getTo();
         if (!(toLocation == null)) {
 
-            if (!PlayerCache.getJoinedPlayers().containsKey(player.getUniqueId().toString())) return;
-            String arenaName = PlayerCache.getJoinedPlayers().get(player.getUniqueId().toString());
+            if (!PlayerCache.getJoinedPlayers().containsKey(player.getUniqueId())) return;
+            String arenaName = PlayerCache.getJoinedPlayers().get(player.getUniqueId());
             Arena arena = ArenaUtils.getArenaByName(arenaName);
             if (arena != null) {
                 if (arena.getState().equals(ArenaState.STARTING) & !event.getFrom().getBlock().equals(event.getTo().getBlock()))
@@ -68,19 +68,19 @@ public class PlayerMovementListener implements Listener {
                 if (arena.getState() != ArenaState.RUNNING) return;
                 if (!ArenaUtils.isInRegion(toLocation, arena)) {
                     if (arena.getMinLocation().getY() + 1 >= toLocation.getY()) {
-                        PlayerCache.removeJoinedPlayers(player.getUniqueId().toString());
+                        PlayerCache.removeJoinedPlayers(player.getUniqueId());
                         player.sendMessage(ChatColor.RED + "You're out!");
-                        arena.addEliminatedPlayers(player.getUniqueId().toString());
-                        arena.getPlayers().remove(player.getUniqueId().toString());
+                        arena.addEliminatedPlayers(player.getUniqueId());
+                        arena.getPlayers().remove(player.getUniqueId());
                         if (arena.getPlayers().size() == 1) {
-                            String winnerUUIDstring=arena.getPlayers().get(0);
-                            Player winner = Bukkit.getPlayer(UUID.fromString(winnerUUIDstring));
+                            UUID winnerUUID=arena.getPlayers().get(0);
+                            Player winner = Bukkit.getPlayer(winnerUUID);
                             if (winner != null) {
                                 winner.playSound(arena.getLobbyLocation(), Sound.ENTITY_PLAYER_LEVELUP,1f,1f);
                             }
-                            PlayerCache.removeJoinedPlayers(winnerUUIDstring);
-                            arena.addEliminatedPlayers(winnerUUIDstring);
-                            arena.getPlayers().remove(winnerUUIDstring);
+                            PlayerCache.removeJoinedPlayers(winnerUUID);
+                            arena.addEliminatedPlayers(winnerUUID);
+                            arena.getPlayers().remove(winnerUUID);
                             GameStateHandler.getInstance().gameEnder(arena);
                         }
 

@@ -28,8 +28,8 @@ public class Countdown {
             @Override
             public void run() {
                 if (time == 0) {
-                    for (String uuidString : arena.getPlayers()){
-                        Player player = Bukkit.getPlayer(UUID.fromString(uuidString));
+                    for (UUID uuid : arena.getPlayers()){
+                        Player player = Bukkit.getPlayer(uuid);
                         if (player != null) {
                             player.sendMessage(ChatColor.GREEN + "The game is starting now!");
                         }
@@ -40,8 +40,8 @@ public class Countdown {
                 }
 
                 if (time % 10 == 0 || time <= 5) {
-                    for (String uuidString : arena.getPlayers()){
-                        Player player = Bukkit.getPlayer(UUID.fromString(uuidString));
+                    for (UUID uuid : arena.getPlayers()){
+                        Player player = Bukkit.getPlayer(uuid);
                         if (player != null) {
                             player.sendMessage(ChatColor.YELLOW + "The game starts in " + time + " seconds!");
                             player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL,1f,1f);

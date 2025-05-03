@@ -35,8 +35,8 @@ public class Arena {
     private boolean active = false;
     private World arenaWorld;
     private List<Location> spawnLocations = new ArrayList<>();
-    private final List<String> players = new ArrayList<>();
-    private final List<String> eliminatedPlayers = new ArrayList<>();
+    private final List<UUID> players = new ArrayList<>();
+    private final List<UUID> eliminatedPlayers = new ArrayList<>();
     private Location minLocation;
     private Location maxLocation;
     private Location lobbyLocation;
@@ -60,11 +60,11 @@ public class Arena {
         this.lobbyLocation = lobbyLocation;
     }
 
-    public List<String> getEliminatedPlayers() {
+    public List<UUID> getEliminatedPlayers() {
         return eliminatedPlayers;
     }
 
-    public void addEliminatedPlayers(String playerUUID){
+    public void addEliminatedPlayers(UUID playerUUID){
         this.eliminatedPlayers.add(playerUUID);
     }
 
@@ -154,15 +154,15 @@ public class Arena {
     }
 
 
-    public List<String> getPlayers() {
+    public List<UUID> getPlayers() {
         return this.players;
     }
 
     private final List<String> playerNames = new ArrayList<>();
 
     public List<String> getPlayerNames() {
-        for (String uuidString : this.getPlayers()){
-            OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(uuidString));
+        for (UUID uuid : this.getPlayers()){
+            OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
             this.playerNames.add(player.getName());
         }
         return this.playerNames;
@@ -170,7 +170,7 @@ public class Arena {
 
     private static final InventoryManager inventoryManager = new InventoryManager();
     public void addPlayer(Player player) {
-        String playerUUID = player.getUniqueId().toString();
+        UUID playerUUID = player.getUniqueId();
         if(PlayerCache.addJoinedPlyers(playerUUID, this.arenaName)){
             if(this.players.size()<this.spawnLocations.size()) {
                 this.players.add(playerUUID);
@@ -186,7 +186,7 @@ public class Arena {
     }
 
     public void removePlayer(Player player) {
-        String playerUUID = player.getUniqueId().toString();
+        UUID playerUUID = player.getUniqueId();
         if(PlayerCache.removeJoinedPlayers(playerUUID)) {
             this.players.remove(playerUUID);
             GameStateHandler gameStateHandler = GameStateHandler.getInstance();
